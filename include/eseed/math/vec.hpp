@@ -83,6 +83,7 @@ public:
     constexpr Vec() : VecData<L, T>{0} {}
 
     // Vec<3, T>(x, y, z) => [ x, y, z ]
+    // Vec<3, T>(x, y) => [ x, y, 0 ]
     template <ConvertibleTo<T>... Ts> requires (sizeof...(Ts) <= L)
     constexpr Vec(const Ts&... components) : VecData<L, T>{((T)components)...} {}
 
@@ -95,12 +96,6 @@ public:
     template <ConvertibleTo<T> T1, size_t L1>
     explicit constexpr Vec(const Vec<L1, T1>& other) {
         for (size_t i = 0; i < std::min(L, L1); i++) data[i] = (T)other[i];
-    }
-
-    // Vec<3, T>(/*Vec<3, U>*/ other) => [ (T)other.x, (T)other.y, (T)other.z ]
-    template <ConvertibleTo<T> T1>
-    constexpr Vec(const Vec<L, T1>& other) {
-        for (size_t i = 0; i < L; i++) data[i] = (T)other[i];
     }
 
     constexpr T operator[](size_t i) const {
@@ -204,10 +199,10 @@ ESEED_VEC_PRE(--)
 ESEED_VEC_POST(--)
 ESEED_VEC_POST(++)
 
+ESEED_VEC_UN(+)
+ESEED_VEC_UN(-)
 ESEED_VEC_UN(!)
 ESEED_VEC_UN(~)
-ESEED_VEC_UN(-)
-ESEED_VEC_UN(+)
 
 ESEED_VEC_BIN_VV(+)
 ESEED_VEC_BIN_VV(-)
