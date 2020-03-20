@@ -1,15 +1,32 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
+#include <eseed/math/ops.hpp>
 #include <eseed/math/vec.hpp>
 #include <eseed/math/vecops.hpp>
 #include <iostream>
 
 TEST_CASE("scalar functions", "[scalar]") {
 
-    esdm::Vec3<float> vector(1, 2, 3);
-    std::cout << vector.x << " : " << vector.y  << std::endl;
+    SECTION("special floating point values") {
+        REQUIRE(esdm::inf<float>() == std::numeric_limits<float>::infinity());
+        REQUIRE(esdm::isinf(std::numeric_limits<float>::infinity()));
+        REQUIRE(esdm::isinf(-std::numeric_limits<float>::infinity()));
+        REQUIRE(!esdm::isinf(5.f));
+        // No way to check for quiet or signaling NaN that I know of =(
+        // Hopefully it just works I guess
+        REQUIRE(esdm::nan<float>() != esdm::nan<float>());
+        REQUIRE(esdm::isnan<float>(NAN));
+    }
 
+    // Constants (pi, etc.) are correct
+
+    SECTION("general functions") {
+        REQUIRE(esdm::abs(-5) == 5);
+        REQUIRE(esdm::sq(5) == 25);
+        REQUIRE(esdm::sqrt(25) == 5);
+        REQUIRE(esdm::pow(2, 4) == 16);
+    }
     
     SECTION("rounding") {
         for (float f = -1.f; f <= 1.f; f += 0.25f) {
@@ -28,6 +45,9 @@ TEST_CASE("scalar functions", "[scalar]") {
             REQUIRE(esdm::iceil<int>(f) == (int)std::ceil(f));
         }
     }
+
+    // At this point trigonometry functions are guaranteed correct because
+    // they're just wrappers over standard library functions
 }
 
 TEST_CASE("vector constructors", "[vector]") {
@@ -48,11 +68,19 @@ TEST_CASE("vector constructors", "[vector]") {
     }
 
     SECTION("multi element") {
-        constexpr esdm::Vec3<float> v(1.f, 2.f, 3.f);
+        constexpr esdm::Vec3<float> v(1, 2, 3);
 
         REQUIRE(v[0] == 1.f);
         REQUIRE(v[1] == 2.f);
         REQUIRE(v[2] == 3.f);
+    }
+
+    SECTION("multi element incomplete") {
+        constexpr esdm::Vec3<float> v(1, 2);
+
+        REQUIRE(v[0] == 1.f);
+        REQUIRE(v[1] == 2.f);
+        REQUIRE(v[2] == 0.f);
     }
 
     SECTION("initializer list") {
@@ -66,8 +94,8 @@ TEST_CASE("vector constructors", "[vector]") {
 
 TEST_CASE("vector operators", "[vector]") {
     SECTION("comparison") {
-        constexpr esdm::Vec3<float> a(1.f, 2.f, 3.f);
-        constexpr esdm::Vec3<float> b(1.f, 2.f, 3.f);
+        constexpr esdm::Vec3<float> a(1, 2, 3);
+        constexpr esdm::Vec3<float> b(1, 2, 3);
         REQUIRE(a == b);
     }
 

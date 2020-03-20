@@ -8,6 +8,7 @@
 #include <ostream>
 #include <array>
 #include <algorithm>
+#include <concepts>
 
 namespace esdm {
 
@@ -81,24 +82,23 @@ public:
     // Vec<3, T>(): [ 0, 0, 0 ]
     constexpr Vec() : VecData<L, T>{0} {}
 
-    // Vec<3, T>(a, b, c) => [ a, b, c ]
-    template <typename... Ts, typename std::enable_if_t<std::conjunction_v<std::is_convertible<Ts, T>...> && (sizeof...(Ts) == L)>* = nullptr>
+    // Vec<3, T>(x, y, z) => [ x, y, z ]
+    template <ConvertibleTo<T>... Ts> requires (sizeof...(Ts) <= L)
     constexpr Vec(const Ts&... components) : VecData<L, T>{((T)components)...} {}
 
-    // Vec<3, T>(v) => [ v, v, v ]
-    explicit constexpr Vec(const T& component) {
-        for (size_t i = 0; i < L; i++)
-            data[i] = component;
+    // Vec<3, T>(n) => [ n, n, n ]
+    explicit constexpr Vec(const T& n) {
+        for (size_t i = 0; i < L; i++) data[i] = n;
     }
 
     // Vec<3, T>(/*Vec<2, U>*/ other) => [ (T)other.x, (T)other.y, 0 ]
-    template <typename T1, size_t L1>
+    template <ConvertibleTo<T> T1, size_t L1>
     explicit constexpr Vec(const Vec<L1, T1>& other) {
         for (size_t i = 0; i < std::min(L, L1); i++) data[i] = (T)other[i];
     }
 
     // Vec<3, T>(/*Vec<3, U>*/ other) => [ (T)other.x, (T)other.y, (T)other.z ]
-    template <typename T1>
+    template <ConvertibleTo<T> T1>
     constexpr Vec(const Vec<L, T1>& other) {
         for (size_t i = 0; i < L; i++) data[i] = (T)other[i];
     }
