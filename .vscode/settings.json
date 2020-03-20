@@ -1,0 +1,10 @@
+{
+    "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools",
+    "files.associations": {
+        "type_traits": "cpp",
+        "cmath": "cpp",
+        "xtr1common": "cpp",
+        "iosfwd": "cpp",
+        "chrono": "cpp"
+    }
+}
