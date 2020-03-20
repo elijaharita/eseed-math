@@ -5,8 +5,9 @@
 
 namespace esdm {
 
+// Generate translation matrix from offset
 template <typename T>
-Mat4<T> matTranslate(const Vec3<T> &translation) {
+Mat4<T> mtrans(const Vec3<T> &translation) {
 
     constexpr T n0 = T(0);
     constexpr T n1 = T(1);
@@ -22,8 +23,9 @@ Mat4<T> matTranslate(const Vec3<T> &translation) {
     };
 }
 
+// Generate rotation matrix from axis and angle
 template <typename T>
-Mat4<T> matRotate(const Vec3<T>& axis, T angle) {
+Mat4<T> mrot(const Vec3<T>& axis, T angle) {
 
     const T c = cos(angle);
     const T s = sin(angle);
@@ -49,36 +51,6 @@ Mat4<T> matRotate(const Vec3<T>& axis, T angle) {
         yx, yy, yz, n0,
         zx, zy, zz, n0,
         n0, n0, n0, n1
-    };
-}
-
-template <typename T>
-Mat4<T> rotateX(const T &xAngle) {
-    return Mat4<T> {
-        1, 0, 0, 0,
-        0, cos(xAngle), -sin(xAngle), 0,
-        0, sin(xAngle), cos(xAngle), 0,
-        0, 0, 0, 1
-    };
-}
-
-template <typename T>
-Mat4<T> rotateY(const T &yAngle) {
-    return Mat4<T> {
-        cos(yAngle), 0, sin(yAngle), 0,
-        0, 1, 0, 0,
-        -sin(yAngle), 0, cos(yAngle), 0,
-        0, 0, 0, 1
-    };
-}
-
-template <typename T>
-Mat4<T> rotateZ(const T &zAngle) {
-    return Mat4<T> {
-        cos(zAngle), -sin(zAngle), 0, 0,
-        sin(zAngle), cos(zAngle), 0, 0,
-        0, 0, 1, 0,
-        0, 0, 0, 1
     };
 }
 

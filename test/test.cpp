@@ -2,9 +2,15 @@
 #include "catch.hpp"
 
 #include <eseed/math/vec.hpp>
+#include <eseed/math/vecops.hpp>
 #include <iostream>
 
 TEST_CASE("scalar functions", "[scalar]") {
+
+    esdm::Vec3<float> vector(1, 2, 3);
+    std::cout << vector.x << " : " << vector.y  << std::endl;
+
+    
     SECTION("rounding") {
         for (float f = -1.f; f <= 1.f; f += 0.25f) {
             REQUIRE(esdm::trunc(f) == std::trunc(f));
@@ -26,24 +32,15 @@ TEST_CASE("scalar functions", "[scalar]") {
 
 TEST_CASE("vector constructors", "[vector]") {
     SECTION("default") {
-        esdm::Vec3<float> v;
+        constexpr esdm::Vec3<float> v;
 
         REQUIRE(v[0] == 0.f);
         REQUIRE(v[1] == 0.f);
         REQUIRE(v[2] == 0.f);
     }
 
-    SECTION("array") {
-        float data[] = { 1.f, 2.f, 3.f };
-        esdm::Vec3<float> v(data);
-
-        REQUIRE(v[0] == 1.f);
-        REQUIRE(v[1] == 2.f);
-        REQUIRE(v[2] == 3.f);
-    }
-
     SECTION("single element") {
-        esdm::Vec3<float> v(1.f);
+        constexpr esdm::Vec3<float> v(1.f);
 
         REQUIRE(v[0] == 1.f);
         REQUIRE(v[1] == 1.f);
@@ -51,7 +48,7 @@ TEST_CASE("vector constructors", "[vector]") {
     }
 
     SECTION("multi element") {
-        esdm::Vec3<float> v(1.f, 2.f, 3.f);
+        constexpr esdm::Vec3<float> v(1.f, 2.f, 3.f);
 
         REQUIRE(v[0] == 1.f);
         REQUIRE(v[1] == 2.f);
@@ -59,7 +56,7 @@ TEST_CASE("vector constructors", "[vector]") {
     }
 
     SECTION("initializer list") {
-        esdm::Vec3<float> v = { 1.f, 2.f, 3.f };
+        constexpr esdm::Vec3<float> v = { 1.f, 2.f, 3.f };
 
         REQUIRE(v[0] == 1.f);
         REQUIRE(v[1] == 2.f);
@@ -69,7 +66,9 @@ TEST_CASE("vector constructors", "[vector]") {
 
 TEST_CASE("vector operators", "[vector]") {
     SECTION("comparison") {
-        REQUIRE(esdm::Vec3<float>(1.f, 2.f, 3.f) == esdm::Vec3<float>(1.f, 2.f, 3.f));
+        constexpr esdm::Vec3<float> a(1.f, 2.f, 3.f);
+        constexpr esdm::Vec3<float> b(1.f, 2.f, 3.f);
+        REQUIRE(a == b);
     }
 
     SECTION("unary") {
@@ -79,8 +78,9 @@ TEST_CASE("vector operators", "[vector]") {
     }
 
     SECTION("binary") {
-        esdm::Vec3<float> a = { 1.f, 2.f, 3.f };
-        esdm::Vec3<float> b = { 4.f, 5.f, 6.f };
+        constexpr esdm::Vec3<float> a = { 1.f, 2.f, 3.f };
+        constexpr esdm::Vec3<float> b = { 4.f, 5.f, 6.f };
+        constexpr esdm::Vec3<float> vv = a + b;
 
         REQUIRE(a + b == esdm::Vec3<float>(5.f, 7.f, 9.f));
         REQUIRE(a + 1.f == esdm::Vec3<float>(2.f, 3.f, 4.f));
@@ -95,6 +95,15 @@ TEST_CASE("vector operators", "[vector]") {
         REQUIRE(a == esdm::Vec3<float>(5.f, 7.f, 9.f));
         REQUIRE((a += 1.f) == esdm::Vec3<float>(6.f, 8.f, 10.f));
         REQUIRE(a == esdm::Vec3<float>(6.f, 8.f, 10.f));
+    }
+
+    SECTION("subscript") {
+        esdm::Vec3<float> a;
+        a[0] = 1.f;
+        REQUIRE(a[0] == 1.f);
+        
+        constexpr esdm::Vec3<float> b(1.f, 2.f, 3.f);
+        REQUIRE(b[0] == 1.f);
     }
 }
 

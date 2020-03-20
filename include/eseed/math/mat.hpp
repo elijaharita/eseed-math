@@ -90,21 +90,13 @@ public:
     // Mat<2, 2, T>() =>
     // [ 0, 0 ]
     // [ 0, 0 ]
-    Mat() {}
-
-    // Mat<2, 2, T>(arr) =>
-    // [ arr[0], arr[2] ]
-    // [ arr[1], arr[3] ]
-    Mat(const T* arr) {
-
-        std::copy(arr, arr + M * N, &data[0][0]);
-    }
+    constexpr Mat() {}
 
     // Mat<2, 2, T>(a, b, c, d) =>
     // [ a, c ]
     // [ b, d ]
     template <typename... Ts, typename std::enable_if_t<std::conjunction_v<std::is_same<Ts, T>...> && (sizeof...(Ts) == M * N)> * = nullptr>
-    Mat(const Ts &... components) {
+    constexpr Mat(const Ts &... components) {
         std::array<T, M * N> arr{((T)components)...};
         std::copy(arr.begin(), arr.end(), &data[0][0]);
     }
@@ -112,34 +104,30 @@ public:
     // Mat<2, 2, T>(v) =>
     // [ v, 0 ]
     // [ 0, v ]
-    explicit Mat(T component) {
+    explicit constexpr Mat(T component) {
         for (size_t i = 0; i < (M > N ? M : N); i++)
             data[i][i] = component;
     }
 
-    Col getCol(size_t j) const {
+    constexpr Col getCol(size_t j) const {
         Col col;
         for (size_t i = 0; i < M; i++)
             col[i] = data[i][j];
         return col;
     }
 
-    Row getRow(size_t i) const {
+    constexpr Row getRow(size_t i) const {
         Row row;
         for (size_t j = 0; j < N; j++)
             row[j] = data[i][j];
         return row;
     }
 
-    const Col &operator[](size_t i) const {
-        if (i >= M)
-            throw std::out_of_range("Index is larger than Vec column");
+    constexpr Col &operator[](size_t i) const {
         return data[i];
     }
 
-    Col &operator[](size_t i) {
-        if (i >= M)
-            throw std::out_of_range("Index is larger than Vec column");
+    constexpr Col &operator[](size_t i) {
         return data[i];
     }
 
