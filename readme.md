@@ -189,6 +189,6 @@ This project began as part of a game engine, and is designed primarily with game
     - Matrix * matrix
     - Matrix * row vector
     - Column vector * matrix
-  - Matrix generation
-    - Translation
-    - Rotation
+- Matrix generation
+  - Translation
+  - Rotation
