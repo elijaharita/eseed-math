@@ -126,7 +126,7 @@ inline Vec<L, T> round(const Vec<L, T>& v) {
 
 // See ops.hpp for "i" functions explanation
 
-// Direct-to-int trunc all components
+// Direct-to-int truncate all components
 template <AnyInt I, size_t L, AnyFloat T>
 constexpr Vec<L, I> itrunc(const Vec<L, T>& v) {
     Vec<L, I> out;
