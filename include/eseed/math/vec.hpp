@@ -1,3 +1,23 @@
+// Copyright (c) 2020 Elijah Seed Arita
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy 
+// of this software and associated documentation files (the "Software"), to deal 
+// in the Software without restriction, including without limitation the rights 
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
+// copies of the Software, and to permit persons to whom the Software is 
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
+// SOFTWARE.
+
 #pragma once
 
 #include "ops.hpp"
@@ -82,20 +102,30 @@ public:
     // Vec<3, T>(): [ 0, 0, 0 ]
     constexpr Vec() : VecData<L, T>{0} {}
 
+    // Repeated single element
+    // Vec<3, T>(n) => [ n, n, n ]
+    constexpr explicit Vec(const T& n) {
+        for (size_t i = 0; i < L; i++) data[i] = n;
+    }
+
+    // Multi element
     // Vec<3, T>(x, y, z) => [ x, y, z ]
     // Vec<3, T>(x, y) => [ x, y, 0 ]
     template <ConvertibleTo<T>... Ts> requires (sizeof...(Ts) <= L)
     constexpr Vec(const Ts&... components) : VecData<L, T>{((T)components)...} {}
 
-    // Vec<3, T>(n) => [ n, n, n ]
-    explicit constexpr Vec(const T& n) {
-        for (size_t i = 0; i < L; i++) data[i] = n;
+    // Type / length conversion (explicit)
+    // If length is smaller, trailing elements are cut
+    // If length is larger, additional elements are default initialized
+    template <ConvertibleTo<T> T1, size_t L1>
+    constexpr explicit Vec(const Vec<L1, T1>& other) {
+        for (size_t i = 0; i < std::min(L, L1); i++) data[i] = (T)other[i];
     }
 
-    // Vec<3, T>(/*Vec<2, U>*/ other) => [ (T)other.x, (T)other.y, 0 ]
-    template <ConvertibleTo<T> T1, size_t L1>
-    explicit constexpr Vec(const Vec<L1, T1>& other) {
-        for (size_t i = 0; i < std::min(L, L1); i++) data[i] = (T)other[i];
+    // Type conversion only (implicit)
+    template <ConvertibleTo<T> T1>
+    constexpr Vec(const Vec<L, T1>& other) {
+        for (size_t i = 0; i < L; i++) data[i] = (T)other[i];
     }
 
     constexpr T operator[](size_t i) const {
@@ -105,21 +135,22 @@ public:
     constexpr T& operator[](size_t i) {
         return data[i];
     }
-};
 
-// Printing
-
-template <size_t L, typename T>
-std::ostream& operator<<(std::ostream& out, const Vec<L, T>& v) {
-    out << "[";
-    for (size_t i = 0; i < L; i++) {
-        out << v[i];
-        if (i < L - 1)
-            out << ", ";
+    constexpr std::string toString() const {
+        std::string out = "[";
+        for (size_t i = 0; i < L; i++) {
+            out += std::to_string(data[i]);
+            if (i < L - 1) out += ", ";
+        }
+        out += "]";
+        return out;
     }
-    out << "]";
-    return out;
-}
+
+    friend std::ostream& operator<<(std::ostream& out, const Vec& v) {
+        out << v.toString();
+        return out;
+    }
+};
 
 // Operators
 

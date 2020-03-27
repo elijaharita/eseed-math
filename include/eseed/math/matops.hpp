@@ -1,3 +1,23 @@
+// Copyright (c) 2020 Elijah Seed Arita
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy 
+// of this software and associated documentation files (the "Software"), to deal 
+// in the Software without restriction, including without limitation the rights 
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
+// copies of the Software, and to permit persons to whom the Software is 
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
+// SOFTWARE.
+
 #pragma once
 
 #include "mat.hpp"
@@ -19,7 +39,10 @@ constexpr Mat<N, M, T> inverse(const Mat<M, N, T> m) {
 
 // Multiply two matrices
 template <size_t M, size_t N, size_t MN, typename T0, typename T1>
-Mat<M, N, decltype(T0(0) * T1(0))> matmul(const Mat<M, MN, T0> &a, const Mat<MN, N, T1> &b) {
+constexpr Mat<M, N, decltype(T0(0) * T1(0))> matmul(
+    const Mat<M, MN, T0> &a, 
+    const Mat<MN, N, T1> &b
+) {
     Mat<M, N, decltype(T0(0) * T1(0))> out;
     for (size_t i = 0; i < N; i++)
         for (size_t j = 0; j < M; j++)
@@ -27,21 +50,25 @@ Mat<M, N, decltype(T0(0) * T1(0))> matmul(const Mat<M, MN, T0> &a, const Mat<MN,
     return out;
 }
 
-// Multiply a matrix by a row vector
+// Multiply a matrix by a column vector
 template <size_t M, size_t N, typename T0, typename T1>
-Vec<M, decltype(T0(0), T1(0))> matmul(const Mat<M, N, T0> &a, const Vec<N, T1> &b) {
+constexpr Vec<N, decltype(T0(0) * T1(0))> matmul(
+    const Mat<M, N, T0> &a, 
+    const Vec<M, T1> &b
+) {
     Vec<M, decltype(T0(0) * T1(0))> out;
-    for (size_t i = 0; i < M; i++)
-        out[i] = dot(a.getRow(i), b);
+    for (size_t i = 0; i < M; i++) out[i] = dot(a.getRow(i), b);
     return out;
 }
 
-// Multiply a column vector by a matrix
+// Multiply a row vector by a matrix
 template <size_t M, size_t N, typename T0, typename T1>
-Vec<N, decltype(T0(0), T1(0))> matmul(const Vec<M, T0> &a, const Mat<M, N, T1> &b) {
+constexpr Vec<M, decltype(T0(0) * T1(0))> matmul(
+    const Vec<N, T0> &a, 
+    const Mat<M, N, T1> &b
+) {
     Vec<N, decltype(T0(0) * T1(0))> out;
-    for (size_t j = 0; j < N; j++)
-        out[j] = dot(a, b.getCol(j));
+    for (size_t j = 0; j < N; j++) out[j] = dot(a, b.getCol(j));
     return out;
 }
 

@@ -2,11 +2,48 @@
 `namespace esdm`
 
 ## Goal
-This library aims to provide fast, flexible, and modern vector, matrix, and quaternion functions. `constexpr` is used everywhere possible, including vector and matrix constructors, to maximize compile-time optimizations. As this is intended to be a modern library, and will likely be in development for some time, C++20 has been chosen as the language standard as its *concepts* allow for much cleaner template code. There is no intention to support obscure or old compilers.
+This library aims to provide fast, flexible, and modern vector, matrix, and quaternion functions. `constexpr` is used everywhere possible, including constructors, to maximize compile-time optimizations. As this is intended to be a modern library, and will likely be under active development for some time, C++20 has been chosen as the language standard as its *concepts* allow for much cleaner template code. There is no intention to support obscure or old compilers.
 
 This project began as part of a game engine, and is designed primarily with game programming in mind.
 
-## Features
+## Usage
+
+This is a header only library. Simply include the `include` folder in your project. 
+
+Alternatively, link `eseed_math` in CMake:
+
+```
+add_subdirectory("path/to/eseed_math/")
+target_link_libraries(target eseed_math)
+```
+
+## Quick introduction
+
+```cpp
+#include <iostream>
+#include <eseed/math/vecops.hpp>
+#include <eseed/math/matops.hpp>
+
+int main() {
+    esdm::Vec3<float> a(1, 2, 3);
+    esdm::Vec3<float> b(4, 5, 6);
+
+    std::cout << "a: " << a << std::endl;
+    std::cout << "b: " << b << std::endl;
+
+    esdm::Vec4<float> point(5, 0, 0, 1);
+    esdm::Mat4<float> rotation = esdm::matrot(esdm::Vec3<float>(0, 1, 0), esdm::pi<float>() * 0.5f);
+
+    std::cout << "point: " << point << std::endl;
+    std::cout << "rotation: " << rotation << std::endl;
+    
+    point = esdm::matmul(point, rotation);
+
+    std::cout << "rotated point: " << point << std::endl;
+}
+```
+
+## Full feature list
 
 ### Scalar functions
 [Full commented header](include/eseed/math/ops.hpp)

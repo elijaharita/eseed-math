@@ -1,9 +1,30 @@
+// Copyright (c) 2020 Elijah Seed Arita
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy 
+// of this software and associated documentation files (the "Software"), to deal 
+// in the Software without restriction, including without limitation the rights 
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
+// copies of the Software, and to permit persons to whom the Software is 
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
+// SOFTWARE.
+
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
 #include <eseed/math/ops.hpp>
 #include <eseed/math/vec.hpp>
 #include <eseed/math/vecops.hpp>
+#include <eseed/math/matops.hpp>
 #include <iostream>
 
 TEST_CASE("scalar functions", "[scalar]") {
@@ -54,41 +75,42 @@ TEST_CASE("vector constructors", "[vector]") {
     SECTION("default") {
         constexpr esdm::Vec3<float> v;
 
-        REQUIRE(v[0] == 0.f);
-        REQUIRE(v[1] == 0.f);
-        REQUIRE(v[2] == 0.f);
+        REQUIRE(v.x == 0.f);
+        REQUIRE(v.y == 0.f);
+        REQUIRE(v.z == 0.f);
     }
 
-    SECTION("single element") {
+    SECTION("repeated single element") {
         constexpr esdm::Vec3<float> v(1.f);
 
-        REQUIRE(v[0] == 1.f);
-        REQUIRE(v[1] == 1.f);
-        REQUIRE(v[2] == 1.f);
+        REQUIRE(v.x == 1.f);
+        REQUIRE(v.y == 1.f);
+        REQUIRE(v.z == 1.f);
     }
 
     SECTION("multi element") {
         constexpr esdm::Vec3<float> v(1, 2, 3);
 
-        REQUIRE(v[0] == 1.f);
-        REQUIRE(v[1] == 2.f);
-        REQUIRE(v[2] == 3.f);
+        REQUIRE(v.x == 1.f);
+        REQUIRE(v.y == 2.f);
+        REQUIRE(v.z == 3.f);
     }
 
     SECTION("multi element incomplete") {
         constexpr esdm::Vec3<float> v(1, 2);
 
-        REQUIRE(v[0] == 1.f);
-        REQUIRE(v[1] == 2.f);
-        REQUIRE(v[2] == 0.f);
+        REQUIRE(v.x == 1.f);
+        REQUIRE(v.y == 2.f);
+        REQUIRE(v.z == 0.f);
     }
 
-    SECTION("initializer list") {
-        constexpr esdm::Vec3<float> v = { 1.f, 2.f, 3.f };
+    SECTION("type / length conversion") {
+        constexpr esdm::Vec2<float> a(1, 2);
+        constexpr esdm::Vec3<int> b(a);
 
-        REQUIRE(v[0] == 1.f);
-        REQUIRE(v[1] == 2.f);
-        REQUIRE(v[2] == 3.f);
+        REQUIRE(b.x == 1);
+        REQUIRE(b.y == 2);
+        REQUIRE(b.z == 0);
     }
 }
 
@@ -132,6 +154,64 @@ TEST_CASE("vector operators", "[vector]") {
         
         constexpr esdm::Vec3<float> b(1.f, 2.f, 3.f);
         REQUIRE(b[0] == 1.f);
+    }
+}
+
+TEST_CASE("special vector accessors", "[vector]") {
+    SECTION("vec1") {
+        constexpr esdm::Vec1<float> v(1);
+
+        // 0
+        REQUIRE(v.x == 1);
+        REQUIRE(v.r == 1);
+    }
+
+    SECTION("vec2") {
+        constexpr esdm::Vec2<float> v(1, 2);
+
+        // 0
+        REQUIRE(v.x == 1);
+        REQUIRE(v.r == 1);
+
+        // 1
+        REQUIRE(v.y == 2);
+        REQUIRE(v.g == 2);
+    }
+
+    SECTION("vec3") {
+        constexpr esdm::Vec3<float> v(1, 2, 3);
+
+        // 0
+        REQUIRE(v.x == 1);
+        REQUIRE(v.r == 1);
+
+        // 1
+        REQUIRE(v.y == 2);
+        REQUIRE(v.g == 2);
+
+        // 2
+        REQUIRE(v.z == 3);
+        REQUIRE(v.b == 3);
+    }
+
+    SECTION("vec4") {
+        constexpr esdm::Vec4<float> v(1, 2, 3, 4);
+
+        // 0
+        REQUIRE(v.x == 1);
+        REQUIRE(v.r == 1);
+
+        // 1
+        REQUIRE(v.y == 2);
+        REQUIRE(v.g == 2);
+
+        // 2
+        REQUIRE(v.z == 3);
+        REQUIRE(v.b == 3);
+
+        // 3
+        REQUIRE(v.w == 4);
+        REQUIRE(v.a == 4);
     }
 }
 
@@ -211,24 +291,149 @@ TEST_CASE("vector functions", "[vector]") {
     }
 
     SECTION("dot product") {
-        REQUIRE(
-            esdm::dot(
-                esdm::Vec3<float>(1.f, 2.f, 3.f), 
-                esdm::Vec3<float>(4.f, 5.f, 6.f)
-            ) == 32.f
+        constexpr float n = esdm::dot(
+            esdm::Vec3<float>(1.f, 2.f, 3.f), 
+            esdm::Vec3<float>(4.f, 5.f, 6.f)
         );
+        
+        REQUIRE(n == 32.f);
     }
 
     SECTION("cross product") {
-        REQUIRE(
-            esdm::cross(
-                esdm::Vec3<float>(2.f, 3.f, 4.f),
-                esdm::Vec3<float>(5.f, 6.f, 7.f)
-            ) == esdm::Vec3<float>(-3.f, 6.f, -3.f)
-        );
+        constexpr esdm::Vec3<float> a(2.f, 3.f, 4.f);
+        constexpr esdm::Vec3<float> b(5.f, 6.f, 7.f);
+        constexpr esdm::Vec3<float> c = esdm::cross(a, b);
+
+        REQUIRE(c == esdm::Vec3<float>(-3.f, 6.f, -3.f));
     }
 }
 
 TEST_CASE("matrix constructors", "[matrix]") {
+    SECTION("default") {
+        constexpr esdm::Mat2<float> m;
+        REQUIRE(m[0][0] == 0);
+        REQUIRE(m[0][1] == 0);
+        REQUIRE(m[1][0] == 0);
+        REQUIRE(m[1][1] == 0);
+    }
+
+    SECTION("multi element") {
+        constexpr esdm::Mat2<float> m(
+            1, 2, 
+            3, 4
+        );
+        REQUIRE(m[0][0] == 1);
+        REQUIRE(m[0][1] == 2);
+        REQUIRE(m[1][0] == 3);
+        REQUIRE(m[1][1] == 4);
+    }
+
+    SECTION("type / size conversion") {
+        constexpr esdm::Mat3<float> a(
+            1, 2, 3, 
+            4, 5, 6, 
+            7, 8, 9
+        );
+        constexpr esdm::Mat2<int> b(a);
+
+        REQUIRE(b[0][0] == 1);
+        REQUIRE(b[0][1] == 2);
+        REQUIRE(b[1][0] == 4);
+        REQUIRE(b[1][1] == 5);
+    }
+
+    SECTION("type conversion only") {
+        constexpr esdm::Mat2<float> a(
+            1, 2,
+            3, 4
+        );
+        constexpr esdm::Mat2<int> b(a);
+        
+        REQUIRE(b[0][0] == 1);
+        REQUIRE(b[0][1] == 2);
+        REQUIRE(b[1][0] == 3);
+        REQUIRE(b[1][1] == 4);
+    }
+}
+
+TEST_CASE("matrix operators", "[matrix]") {
+    SECTION("comparison") {
+        constexpr esdm::Mat2<float> a(1, 2, 3, 4);
+        constexpr esdm::Mat2<float> b(1, 2, 3, 4);
+        REQUIRE(a == b);
+    }
+
+    SECTION("unary") {
+        constexpr esdm::Mat2<float> v(1, 2, 3, 4);
+
+        REQUIRE(-v == esdm::Mat2<float>(-1, -2, -3, -4));
+    }
+
+    SECTION("binary") {
+        constexpr esdm::Mat2<float> a(1, 2, 3, 4);
+        constexpr esdm::Mat2<float> b(5, 6, 7, 8);
+
+        REQUIRE(a + b == esdm::Mat2<float>(6, 8, 10, 12));
+        REQUIRE(a + 1.f == esdm::Mat2<float>(2, 3, 4, 5));
+        REQUIRE(1.f + a == esdm::Mat2<float>(2, 3, 4, 5));
+    }
+
+    SECTION("assignment") {
+        esdm::Mat2<float> a(1, 2, 3, 4);
+        esdm::Mat2<float> b(5, 6, 7, 8);
+
+        REQUIRE((a += b) == esdm::Mat2<float>(6, 8, 10, 12));
+        REQUIRE(a == esdm::Mat2<float>(6, 8, 10, 12));
+        REQUIRE((b += 1.f) == esdm::Mat2<float>(6, 7, 8, 9));
+        REQUIRE(b == esdm::Mat2<float>(6, 7, 8, 9));
+    }
+
+    SECTION("subscript") {
+        esdm::Mat2<float> a;
+        a[0][0] = 1.f;
+        REQUIRE(a[0][0] == 1.f);
+        
+        constexpr esdm::Mat2<float> b(1.f, 2.f, 3.f, 4.f);
+        REQUIRE(b[0][0] == 1.f);
+    }
+}
+
+TEST_CASE("matrix accessors", "[matrix]") {
+    constexpr esdm::Mat2<float> m(
+        1, 2,
+        3, 4
+    );
     
+    SECTION("col") {
+        constexpr esdm::Mat2<float>::Col col = m.getCol(0);
+        REQUIRE(col == esdm::Vec2<float>(1, 3));
+    }
+
+    SECTION("row") {
+        constexpr esdm::Mat2<float>::Row row = m.getRow(0);
+        REQUIRE(row == esdm::Vec2<float>(1, 2));
+    }
+}
+
+TEST_CASE("matrix functions", "[matrix]") {
+    SECTION("inverse") {
+        constexpr esdm::Mat2<float> a(1, 2, 3, 4);
+        constexpr esdm::Mat2<float> b = esdm::inverse(a);
+        REQUIRE(b == esdm::Mat2<float>(1, 3, 2, 4));
+    }
+
+    SECTION("multiplication") {
+        constexpr esdm::Mat2<float> a(1, 2, 3, 4);
+        constexpr esdm::Mat2<float> b(5, 6, 7, 8);
+        constexpr esdm::Mat2<float> c(esdm::matmul(a, b));
+        REQUIRE(c == esdm::Mat2<float>(19, 22, 43, 50));
+
+        constexpr esdm::Vec2<float> v(1, 2);
+
+        constexpr esdm::Vec2<float> d(esdm::matmul(a, v));
+        constexpr esdm::Vec2<float> e(esdm::matmul(v, a));
+
+        REQUIRE(d == esdm::Vec2<float>(5, 11));
+        REQUIRE(e == esdm::Vec2<float>(7, 10));
+    }
 }

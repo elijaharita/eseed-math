@@ -1,5 +1,4 @@
 {
-    "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools",
     "files.associations": {
         "type_traits": "cpp",
         "cmath": "cpp",
@@ -73,5 +72,6 @@
         "xstddef": "cpp",
         "xstring": "cpp",
         "xtree": "cpp"
-    }
+    },
+    "C_Cpp.intelliSenseEngine": "Tag Parser"
 }
