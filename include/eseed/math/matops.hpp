@@ -27,9 +27,9 @@ namespace esdm {
 
 // -- GENERAL FUNCTIONS -- //
 
-// Inverse of a matrix
+// Transpose of a matrix
 template <std::size_t M, std::size_t N, typename T>
-constexpr Mat<N, M, T> inverse(const Mat<M, N, T> m) {
+constexpr Mat<N, M, T> transpose(const Mat<M, N, T> m) {
     Mat<M, N, T> out;
     for (std::size_t i = 0; i < M; i++)
         for (std::size_t j = 0; j < N; j++)
