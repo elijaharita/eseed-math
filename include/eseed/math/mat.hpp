@@ -189,7 +189,7 @@ public:
     }
 };
 
-// Operators
+// -- OPERATORS -- //
 
 template <std::size_t M, std::size_t N, typename T0, typename T1> 
 constexpr bool operator==(const Mat<M, N, T0>& a, const Mat<M, N, T1>& b) { 
@@ -197,78 +197,51 @@ constexpr bool operator==(const Mat<M, N, T0>& a, const Mat<M, N, T1>& b) {
     return true; 
 }
 
-#define ESEED_MAT_PRE(op)                        \
+// Pre-increment and decrement
+#define ESEED_MAT_PRE(op)                                  \
     template <std::size_t M, std::size_t N, typename T>    \
     constexpr Mat<M, N, T> &operator op(Mat<M, N, T> &m) { \
-        for (std::size_t i = 0; i < M; i++) op m[i];                             \
-        return m;                                \
+        for (std::size_t i = 0; i < M; i++) op m[i];       \
+        return m;                                          \
     }
-
-#define ESEED_MAT_POST(op)                           \
-    template <std::size_t M, std::size_t N, typename T>        \
-    constexpr Mat<M, N, T> operator op(Mat<M, N, T> &m, int) { \
-        Mat<M, N, T> out = m;                        \
-        for (std::size_t i = 0; i < M; i++) m[i] op;                                 \
-        return out;                                  \
-    }
-
-#define ESEED_MAT_UN(op)                              \
-    template <std::size_t M, std::size_t N, typename T>         \
-    constexpr Mat<M, N, T> operator op(const Mat<M, N, T> &m) { \
-        Mat<M, N, T> out;                             \
-        for (std::size_t i = 0; i < M; i++) out[i] = op m[i];                                  \
-        return out;                                   \
-    }
-
-#define ESEED_MAT_BIN_MM(op)                                                                          \
-    template <std::size_t M, std::size_t N, typename T0, typename T1>                                           \
-    constexpr Mat<M, N, decltype(T0(0) op T1(0))> operator op(const Mat<M, N, T0> &a, const Mat<M, N, T1> &b) { \
-        Mat<M, N, decltype(T0(0) op T1(0))> out;                                                      \
-        for (std::size_t i = 0; i < M; i++) out[i] = a[i] op b[i];                                                                    \
-        return out;                                                                                   \
-    }
-
-#define ESEED_MAT_BIN_MS(op)                                                        \
-    template <std::size_t M, std::size_t N, typename T0, typename T1>                         \
-    constexpr Mat<M, N, decltype(T0(0) op T1(0))> operator op(const Mat<M, N, T0> &a, T1 b) { \
-        Mat<M, N, decltype(T0(0) op T1(0))> out;                                    \
-        for (std::size_t i = 0; i < M; i++) out[i] = a[i] op b;                                                     \
-        return out;                                                                 \
-    }
-
-#define ESEED_MAT_BIN_SM(op)                                                               \
-    template <std::size_t M, std::size_t N, typename T0, typename T1>                                \
-    constexpr Mat<M, N, decltype(T0(0) op T1(0))> operator op(const T0 &a, const Mat<M, N, T1> &b) { \
-        Mat<M, N, decltype(T0(0) op T1(0))> out;                                           \
-        for (std::size_t i = 0; i < M; i++) out[i] = a op b[i];                                                            \
-        return out;                                                                        \
-    }
-
-#define ESEED_MAT_ASSN_MM(op)                                                                    \
-    template <std::size_t M, std::size_t N, typename T0, typename T1, typename = decltype(T0(0) op T1(0))> \
-    Mat<M, N, T0>& operator op##=(Mat<M, N, T0>& a, const Mat<M, N, T1>& b) {                    \
-        for (std::size_t i = 0; i < M; i++) a[i] op##= b[i];                                                                        \
-        return a;                                                                                \
-    }
-
-#define ESEED_MAT_ASSN_MS(op)                                                                    \
-    template <std::size_t M, std::size_t N, typename T0, typename T1, typename = decltype(T0(0) op T1(0))> \
-    Mat<M, N, T0>& operator op##=(Mat<M, N, T0>& a, T1 b) {                                      \
-        for (std::size_t i = 0; i < M; i++) a[i] op##= b;                                             \
-        return a;                                                                                \
-    }
-
 ESEED_MAT_PRE(++)
 ESEED_MAT_PRE(--)
+#undef ESEED_MAT_PRE
 
+// Post-increment and decrement
+#define ESEED_MAT_POST(op)                                     \
+    template <std::size_t M, std::size_t N, typename T>        \
+    constexpr Mat<M, N, T> operator op(Mat<M, N, T> &m, int) { \
+        Mat<M, N, T> out = m;                                  \
+        for (std::size_t i = 0; i < M; i++) m[i] op;           \
+        return out;                                            \
+    }
 ESEED_MAT_POST(--)
 ESEED_MAT_POST(++)
+#undef ESEED_MAT_POST
 
+// Unary
+#define ESEED_MAT_UN(op)                                        \
+    template <std::size_t M, std::size_t N, typename T>         \
+    constexpr Mat<M, N, T> operator op(const Mat<M, N, T> &m) { \
+        Mat<M, N, T> out;                                       \
+        for (std::size_t i = 0; i < M; i++) out[i] = op m[i];   \
+        return out;                                             \
+    }
 ESEED_MAT_UN(!)
 ESEED_MAT_UN(~)
 ESEED_MAT_UN(-)
 ESEED_MAT_UN(+)
+#undef ESEED_MAT_UN
 
+// Binary matrix-matrix
+#define ESEED_MAT_BIN_MM(op)                                                                                    \
+    template <std::size_t M, std::size_t N, typename T0, typename T1>                                           \
+    constexpr Mat<M, N, decltype(T0(0) op T1(0))> operator op(const Mat<M, N, T0> &a, const Mat<M, N, T1> &b) { \
+        Mat<M, N, decltype(T0(0) op T1(0))> out;                                                                \
+        for (std::size_t i = 0; i < M; i++) out[i] = a[i] op b[i];                                              \
+        return out;                                                                                             \
+    }
 ESEED_MAT_BIN_MM(+)
 ESEED_MAT_BIN_MM(-)
 ESEED_MAT_BIN_MM(*)
@@ -281,7 +254,16 @@ ESEED_MAT_BIN_MM(<<)
 ESEED_MAT_BIN_MM(>>)
 ESEED_MAT_BIN_MM(&&)
 ESEED_MAT_BIN_MM(||)
+#undef ESEED_MAT_BIN_MM
 
+// Binary matrix-scalar
+#define ESEED_MAT_BIN_MS(op)                                                                  \
+    template <std::size_t M, std::size_t N, typename T0, typename T1>                         \
+    constexpr Mat<M, N, decltype(T0(0) op T1(0))> operator op(const Mat<M, N, T0> &a, T1 b) { \
+        Mat<M, N, decltype(T0(0) op T1(0))> out;                                              \
+        for (std::size_t i = 0; i < M; i++) out[i] = a[i] op b;                               \
+        return out;                                                                           \
+    }
 ESEED_MAT_BIN_MS(+)
 ESEED_MAT_BIN_MS(-)
 ESEED_MAT_BIN_MS(*)
@@ -294,7 +276,16 @@ ESEED_MAT_BIN_MS(<<)
 ESEED_MAT_BIN_MS(>>)
 ESEED_MAT_BIN_MS(&&)
 ESEED_MAT_BIN_MS(||)
+#undef ESEED_MAT_BIN_MS
 
+// Bnary scalar-matrix
+#define ESEED_MAT_BIN_SM(op)                                                                         \
+    template <std::size_t M, std::size_t N, typename T0, typename T1>                                \
+    constexpr Mat<M, N, decltype(T0(0) op T1(0))> operator op(const T0 &a, const Mat<M, N, T1> &b) { \
+        Mat<M, N, decltype(T0(0) op T1(0))> out;                                                     \
+        for (std::size_t i = 0; i < M; i++) out[i] = a op b[i];                                      \
+        return out;                                                                                  \
+    }
 ESEED_MAT_BIN_SM(+)
 ESEED_MAT_BIN_SM(-)
 ESEED_MAT_BIN_SM(*)
@@ -307,7 +298,15 @@ ESEED_MAT_BIN_SM(<<)
 ESEED_MAT_BIN_SM(>>)
 ESEED_MAT_BIN_SM(&&)
 ESEED_MAT_BIN_SM(||)
+#undef ESEED_MAT_BIN_SM
 
+// Assignment matrix-matrix
+#define ESEED_MAT_ASSN_MM(op)                                                                    \
+    template <std::size_t M, std::size_t N, typename T0, typename T1, typename = decltype(T0(0) op T1(0))> \
+    Mat<M, N, T0>& operator op##=(Mat<M, N, T0>& a, const Mat<M, N, T1>& b) {                    \
+        for (std::size_t i = 0; i < M; i++) a[i] op##= b[i];                                                                        \
+        return a;                                                                                \
+    }
 ESEED_MAT_ASSN_MM(+)
 ESEED_MAT_ASSN_MM(-)
 ESEED_MAT_ASSN_MM(*)
@@ -318,7 +317,15 @@ ESEED_MAT_ASSN_MM(|)
 ESEED_MAT_ASSN_MM(^)
 ESEED_MAT_ASSN_MM(<<)
 ESEED_MAT_ASSN_MM(>>)
+#undef ESEED_MAT_ASSN_MM
 
+// Assignment matrix-scalar
+#define ESEED_MAT_ASSN_MS(op)                                                                    \
+    template <std::size_t M, std::size_t N, typename T0, typename T1, typename = decltype(T0(0) op T1(0))> \
+    Mat<M, N, T0>& operator op##=(Mat<M, N, T0>& a, T1 b) {                                      \
+        for (std::size_t i = 0; i < M; i++) a[i] op##= b;                                             \
+        return a;                                                                                \
+    }
 ESEED_MAT_ASSN_MS(+)
 ESEED_MAT_ASSN_MS(-)
 ESEED_MAT_ASSN_MS(*)
@@ -329,5 +336,6 @@ ESEED_MAT_ASSN_MS(|)
 ESEED_MAT_ASSN_MS(^)
 ESEED_MAT_ASSN_MS(<<)
 ESEED_MAT_ASSN_MS(>>)
+#undef ESEED_MAT_ASSN_MS
 
 }

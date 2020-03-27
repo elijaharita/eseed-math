@@ -152,89 +152,59 @@ public:
     }
 };
 
-// Operators
+// -- OPERATORS -- //
 
-#define ESEED_VEC_CMPR()                                                               \
-    template <std::size_t L, typename T0, typename T1, typename = decltype(T0(0) == T1(0))> \
-    constexpr bool operator==(const Vec<L, T0>& a, const Vec<L, T1>& b) {              \
-        for (std::size_t i = 0; i < L; i++) if (a[i] != b[i]) return false;                 \
-        return true;                                                                   \
-    }                                                                                  \
+template <std::size_t L, typename T0, typename T1, typename = decltype(T0(0) == T1(0))> 
+constexpr bool operator==(const Vec<L, T0>& a, const Vec<L, T1>& b) {              
+    for (std::size_t i = 0; i < L; i++) if (a[i] != b[i]) return false;                 
+    return true;                                                                   
+}                                                                                  
 
-#define ESEED_VEC_PRE(op)                                                 \
+// Pre-increment and decrement
+#define ESEED_VEC_PRE(op)                                                      \
     template <std::size_t L, typename T, typename = decltype((*(new T(0)))op)> \
-    constexpr Vec<L, T>& operator op(Vec<L, T>& v) {                      \
+    constexpr Vec<L, T>& operator op(Vec<L, T>& v) {                           \
         for (std::size_t i = 0; i < L; i++) op v[i];                           \
-        return v;                                                         \
+        return v;                                                              \
     }
-
-#define ESEED_VEC_POST(op)                                                \
-    template <std::size_t L, typename T, typename = decltype((*(new T(0)))op)> \
-    constexpr Vec<L, T> operator op(Vec<L, T>& v, int) {                  \
-        Vec<L, T> out = v;                                                \
-        for (std::size_t i = 0; i < L; i++) v[i] op;                           \
-        return out;                                                       \
-    }
-
-#define ESEED_VEC_UN(op)                                          \
-    template <std::size_t L, typename T, typename = decltype(op T(0))> \
-    constexpr Vec<L, T> operator op(const Vec<L, T>& v) {         \
-        Vec<L, T> out;                                            \
-        for (std::size_t i = 0; i < L; i++) out[i] = op v[i];          \
-        return out;                                               \
-    }
-
-#define ESEED_VEC_BIN_VV(op)                                                                \
-    template <std::size_t L, typename T0, typename T1, typename TRes = decltype(T0(0) op T1(0))> \
-    constexpr Vec<L, TRes> operator op(const Vec<L, T0>& a, const Vec<L, T1>& b) {          \
-        Vec<L, TRes> out;                                                                   \
-        for (std::size_t i = 0; i < L; i++) out[i] = a[i] op b[i];                               \
-        return out;                                                                         \
-    }
-
-#define ESEED_VEC_BIN_VS(op)                                                                \
-    template <std::size_t L, typename T0, typename T1, typename TRes = decltype(T0(0) op T1(0))> \
-    constexpr Vec<L, TRes> operator op(const Vec<L, T0>& a, T1 b) {                         \
-        Vec<L, TRes> out;                                                                   \
-        for (std::size_t i = 0; i < L; i++) out[i] = a[i] op b;                                  \
-        return out;                                                                         \
-    }
-
-#define ESEED_VEC_BIN_SV(op)                                                                \
-    template <std::size_t L, typename T0, typename T1, typename TRes = decltype(T0(0) op T1(0))> \
-    constexpr Vec<L, TRes> operator op(const T0& a, const Vec<L, T1>& b) {                  \
-        Vec<L, TRes> out;                                                                   \
-        for (std::size_t i = 0; i < L; i++) out[i] = a op b[i];                                  \
-        return out;                                                                         \
-    }
-
-#define ESEED_VEC_ASSN_VV(op)                                                          \
-    template <std::size_t L, typename T0, typename T1, typename = decltype(T0(0) op T1(0))> \
-    Vec<L, T0>& operator op##=(Vec<L, T0>& a, const Vec<L, T1>& b) {                   \
-        for (std::size_t i = 0; i < L; i++) a[i] op##= b[i];                                \
-        return a;                                                                      \
-    }
-
-#define ESEED_VEC_ASSN_VS(op)                                                          \
-    template <std::size_t L, typename T0, typename T1, typename = decltype(T0(0) op T1(0))> \
-    Vec<L, T0>& operator op##=(Vec<L, T0>& a, T1 b) {                                  \
-        for (std::size_t i = 0; i < L; i++) a[i] op##= b;                                   \
-        return a;                                                                      \
-    }
-
-ESEED_VEC_CMPR()
-
 ESEED_VEC_PRE(++)
 ESEED_VEC_PRE(--)
+#undef ESEED_VEC_PRE
 
+// Post-increment and decrement
+#define ESEED_VEC_POST(op)                                                     \
+    template <std::size_t L, typename T, typename = decltype((*(new T(0)))op)> \
+    constexpr Vec<L, T> operator op(Vec<L, T>& v, int) {                       \
+        Vec<L, T> out = v;                                                     \
+        for (std::size_t i = 0; i < L; i++) v[i] op;                           \
+        return out;                                                            \
+    }
 ESEED_VEC_POST(--)
 ESEED_VEC_POST(++)
+#undef ESEED_VEC_POST
 
+// Unary
+#define ESEED_VEC_UN(op)                                               \
+    template <std::size_t L, typename T, typename = decltype(op T(0))> \
+    constexpr Vec<L, T> operator op(const Vec<L, T>& v) {              \
+        Vec<L, T> out;                                                 \
+        for (std::size_t i = 0; i < L; i++) out[i] = op v[i];          \
+        return out;                                                    \
+    }
 ESEED_VEC_UN(+)
 ESEED_VEC_UN(-)
 ESEED_VEC_UN(!)
 ESEED_VEC_UN(~)
+#undef ESEED_VEC_UN
 
+// Binary vector-vector
+#define ESEED_VEC_BIN_VV(op)                                                                     \
+    template <std::size_t L, typename T0, typename T1, typename TRes = decltype(T0(0) op T1(0))> \
+    constexpr Vec<L, TRes> operator op(const Vec<L, T0>& a, const Vec<L, T1>& b) {               \
+        Vec<L, TRes> out;                                                                        \
+        for (std::size_t i = 0; i < L; i++) out[i] = a[i] op b[i];                               \
+        return out;                                                                              \
+    }
 ESEED_VEC_BIN_VV(+)
 ESEED_VEC_BIN_VV(-)
 ESEED_VEC_BIN_VV(*)
@@ -242,12 +212,21 @@ ESEED_VEC_BIN_VV(/)
 ESEED_VEC_BIN_VV(%)
 ESEED_VEC_BIN_VV(&)
 ESEED_VEC_BIN_VV(|)
-ESEED_VEC_BIN_VV (^)
+ESEED_VEC_BIN_VV(^)
 ESEED_VEC_BIN_VV(<<)
 ESEED_VEC_BIN_VV(>>)
 ESEED_VEC_BIN_VV(&&)
 ESEED_VEC_BIN_VV(||)
+#undef ESEED_VEC_BIN_VV
 
+// Binary vector-scalar
+#define ESEED_VEC_BIN_VS(op)                                                                     \
+    template <std::size_t L, typename T0, typename T1, typename TRes = decltype(T0(0) op T1(0))> \
+    constexpr Vec<L, TRes> operator op(const Vec<L, T0>& a, T1 b) {                              \
+        Vec<L, TRes> out;                                                                        \
+        for (std::size_t i = 0; i < L; i++) out[i] = a[i] op b;                                  \
+        return out;                                                                              \
+    }
 ESEED_VEC_BIN_VS(+)
 ESEED_VEC_BIN_VS(-)
 ESEED_VEC_BIN_VS(*)
@@ -255,12 +234,21 @@ ESEED_VEC_BIN_VS(/)
 ESEED_VEC_BIN_VS(%)
 ESEED_VEC_BIN_VS(&)
 ESEED_VEC_BIN_VS(|)
-ESEED_VEC_BIN_VS (^)
+ESEED_VEC_BIN_VS(^)
 ESEED_VEC_BIN_VS(<<)
 ESEED_VEC_BIN_VS(>>)
 ESEED_VEC_BIN_VS(&&)
 ESEED_VEC_BIN_VS(||)
+#undef ESEED_VEC_BIN_VS
 
+// Binary scalar-vector
+#define ESEED_VEC_BIN_SV(op)                                                                     \
+    template <std::size_t L, typename T0, typename T1, typename TRes = decltype(T0(0) op T1(0))> \
+    constexpr Vec<L, TRes> operator op(const T0& a, const Vec<L, T1>& b) {                       \
+        Vec<L, TRes> out;                                                                        \
+        for (std::size_t i = 0; i < L; i++) out[i] = a op b[i];                                  \
+        return out;                                                                              \
+    }
 ESEED_VEC_BIN_SV(+)
 ESEED_VEC_BIN_SV(-)
 ESEED_VEC_BIN_SV(*)
@@ -268,12 +256,20 @@ ESEED_VEC_BIN_SV(/)
 ESEED_VEC_BIN_SV(%)
 ESEED_VEC_BIN_SV(&)
 ESEED_VEC_BIN_SV(|)
-ESEED_VEC_BIN_SV (^)
+ESEED_VEC_BIN_SV(^)
 ESEED_VEC_BIN_SV(<<)
 ESEED_VEC_BIN_SV(>>)
 ESEED_VEC_BIN_SV(&&)
 ESEED_VEC_BIN_SV(||)
+#undef ESEED_VEC_BIN_SV
 
+// Assignment vector-vector
+#define ESEED_VEC_ASSN_VV(op)                                                               \
+    template <std::size_t L, typename T0, typename T1, typename = decltype(T0(0) op T1(0))> \
+    Vec<L, T0>& operator op##=(Vec<L, T0>& a, const Vec<L, T1>& b) {                        \
+        for (std::size_t i = 0; i < L; i++) a[i] op##= b[i];                                \
+        return a;                                                                           \
+    }
 ESEED_VEC_ASSN_VV(+)
 ESEED_VEC_ASSN_VV(-)
 ESEED_VEC_ASSN_VV(*)
@@ -284,7 +280,15 @@ ESEED_VEC_ASSN_VV(|)
 ESEED_VEC_ASSN_VV(^)
 ESEED_VEC_ASSN_VV(<<)
 ESEED_VEC_ASSN_VV(>>)
+#undef ESEED_VEC_ASSN_VV
 
+// Assignment vector-scalar
+#define ESEED_VEC_ASSN_VS(op)                                                               \
+    template <std::size_t L, typename T0, typename T1, typename = decltype(T0(0) op T1(0))> \
+    Vec<L, T0>& operator op##=(Vec<L, T0>& a, T1 b) {                                       \
+        for (std::size_t i = 0; i < L; i++) a[i] op##= b;                                   \
+        return a;                                                                           \
+    }
 ESEED_VEC_ASSN_VS(+)
 ESEED_VEC_ASSN_VS(-)
 ESEED_VEC_ASSN_VS(*)
@@ -295,5 +299,6 @@ ESEED_VEC_ASSN_VS(|)
 ESEED_VEC_ASSN_VS(^)
 ESEED_VEC_ASSN_VS(<<)
 ESEED_VEC_ASSN_VS(>>)
+#undef ESEED_VEC_ASSN_VS
 
 }
