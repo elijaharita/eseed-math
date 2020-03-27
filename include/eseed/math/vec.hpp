@@ -32,7 +32,7 @@
 
 namespace esdm {
 
-template <size_t L, typename T>
+template <std::size_t L, typename T>
 class VecData {
 public:
     T data[L];
@@ -79,7 +79,7 @@ public:
 };
 
 // Forward declaration for shorthand aliases
-template <size_t L, typename T>
+template <std::size_t L, typename T>
 class Vec;
 
 // Shorthand aliases
@@ -96,7 +96,7 @@ using Vec3 = Vec<3, T>;
 template <typename T>
 using Vec4 = Vec<4, T>;
 
-template <size_t L, typename T>
+template <std::size_t L, typename T>
 class Vec : public VecData<L, T> {
 public:
     // Vec<3, T>(): [ 0, 0, 0 ]
@@ -105,7 +105,7 @@ public:
     // Repeated single element
     // Vec<3, T>(n) => [ n, n, n ]
     constexpr explicit Vec(const T& n) {
-        for (size_t i = 0; i < L; i++) data[i] = n;
+        for (std::size_t i = 0; i < L; i++) data[i] = n;
     }
 
     // Multi element
@@ -117,28 +117,28 @@ public:
     // Type / length conversion (explicit)
     // If length is smaller, trailing elements are cut
     // If length is larger, additional elements are default initialized
-    template <ConvertibleTo<T> T1, size_t L1>
+    template <ConvertibleTo<T> T1, std::size_t L1>
     constexpr explicit Vec(const Vec<L1, T1>& other) {
-        for (size_t i = 0; i < std::min(L, L1); i++) data[i] = (T)other[i];
+        for (std::size_t i = 0; i < std::min(L, L1); i++) data[i] = (T)other[i];
     }
 
     // Type conversion only (implicit)
     template <ConvertibleTo<T> T1>
     constexpr Vec(const Vec<L, T1>& other) {
-        for (size_t i = 0; i < L; i++) data[i] = (T)other[i];
+        for (std::size_t i = 0; i < L; i++) data[i] = (T)other[i];
     }
 
-    constexpr T operator[](size_t i) const {
+    constexpr T operator[](std::size_t i) const {
         return data[i];
     }
 
-    constexpr T& operator[](size_t i) {
+    constexpr T& operator[](std::size_t i) {
         return data[i];
     }
 
     constexpr std::string toString() const {
         std::string out = "[";
-        for (size_t i = 0; i < L; i++) {
+        for (std::size_t i = 0; i < L; i++) {
             out += std::to_string(data[i]);
             if (i < L - 1) out += ", ";
         }
@@ -155,70 +155,70 @@ public:
 // Operators
 
 #define ESEED_VEC_CMPR()                                                               \
-    template <size_t L, typename T0, typename T1, typename = decltype(T0(0) == T1(0))> \
+    template <std::size_t L, typename T0, typename T1, typename = decltype(T0(0) == T1(0))> \
     constexpr bool operator==(const Vec<L, T0>& a, const Vec<L, T1>& b) {              \
-        for (size_t i = 0; i < L; i++) if (a[i] != b[i]) return false;                 \
+        for (std::size_t i = 0; i < L; i++) if (a[i] != b[i]) return false;                 \
         return true;                                                                   \
     }                                                                                  \
 
 #define ESEED_VEC_PRE(op)                                                 \
-    template <size_t L, typename T, typename = decltype((*(new T(0)))op)> \
+    template <std::size_t L, typename T, typename = decltype((*(new T(0)))op)> \
     constexpr Vec<L, T>& operator op(Vec<L, T>& v) {                      \
-        for (size_t i = 0; i < L; i++) op v[i];                           \
+        for (std::size_t i = 0; i < L; i++) op v[i];                           \
         return v;                                                         \
     }
 
 #define ESEED_VEC_POST(op)                                                \
-    template <size_t L, typename T, typename = decltype((*(new T(0)))op)> \
+    template <std::size_t L, typename T, typename = decltype((*(new T(0)))op)> \
     constexpr Vec<L, T> operator op(Vec<L, T>& v, int) {                  \
         Vec<L, T> out = v;                                                \
-        for (size_t i = 0; i < L; i++) v[i] op;                           \
+        for (std::size_t i = 0; i < L; i++) v[i] op;                           \
         return out;                                                       \
     }
 
 #define ESEED_VEC_UN(op)                                          \
-    template <size_t L, typename T, typename = decltype(op T(0))> \
+    template <std::size_t L, typename T, typename = decltype(op T(0))> \
     constexpr Vec<L, T> operator op(const Vec<L, T>& v) {         \
         Vec<L, T> out;                                            \
-        for (size_t i = 0; i < L; i++) out[i] = op v[i];          \
+        for (std::size_t i = 0; i < L; i++) out[i] = op v[i];          \
         return out;                                               \
     }
 
 #define ESEED_VEC_BIN_VV(op)                                                                \
-    template <size_t L, typename T0, typename T1, typename TRes = decltype(T0(0) op T1(0))> \
+    template <std::size_t L, typename T0, typename T1, typename TRes = decltype(T0(0) op T1(0))> \
     constexpr Vec<L, TRes> operator op(const Vec<L, T0>& a, const Vec<L, T1>& b) {          \
         Vec<L, TRes> out;                                                                   \
-        for (size_t i = 0; i < L; i++) out[i] = a[i] op b[i];                               \
+        for (std::size_t i = 0; i < L; i++) out[i] = a[i] op b[i];                               \
         return out;                                                                         \
     }
 
 #define ESEED_VEC_BIN_VS(op)                                                                \
-    template <size_t L, typename T0, typename T1, typename TRes = decltype(T0(0) op T1(0))> \
+    template <std::size_t L, typename T0, typename T1, typename TRes = decltype(T0(0) op T1(0))> \
     constexpr Vec<L, TRes> operator op(const Vec<L, T0>& a, T1 b) {                         \
         Vec<L, TRes> out;                                                                   \
-        for (size_t i = 0; i < L; i++) out[i] = a[i] op b;                                  \
+        for (std::size_t i = 0; i < L; i++) out[i] = a[i] op b;                                  \
         return out;                                                                         \
     }
 
 #define ESEED_VEC_BIN_SV(op)                                                                \
-    template <size_t L, typename T0, typename T1, typename TRes = decltype(T0(0) op T1(0))> \
+    template <std::size_t L, typename T0, typename T1, typename TRes = decltype(T0(0) op T1(0))> \
     constexpr Vec<L, TRes> operator op(const T0& a, const Vec<L, T1>& b) {                  \
         Vec<L, TRes> out;                                                                   \
-        for (size_t i = 0; i < L; i++) out[i] = a op b[i];                                  \
+        for (std::size_t i = 0; i < L; i++) out[i] = a op b[i];                                  \
         return out;                                                                         \
     }
 
 #define ESEED_VEC_ASSN_VV(op)                                                          \
-    template <size_t L, typename T0, typename T1, typename = decltype(T0(0) op T1(0))> \
+    template <std::size_t L, typename T0, typename T1, typename = decltype(T0(0) op T1(0))> \
     Vec<L, T0>& operator op##=(Vec<L, T0>& a, const Vec<L, T1>& b) {                   \
-        for (size_t i = 0; i < L; i++) a[i] op##= b[i];                                \
+        for (std::size_t i = 0; i < L; i++) a[i] op##= b[i];                                \
         return a;                                                                      \
     }
 
 #define ESEED_VEC_ASSN_VS(op)                                                          \
-    template <size_t L, typename T0, typename T1, typename = decltype(T0(0) op T1(0))> \
+    template <std::size_t L, typename T0, typename T1, typename = decltype(T0(0) op T1(0))> \
     Vec<L, T0>& operator op##=(Vec<L, T0>& a, T1 b) {                                  \
-        for (size_t i = 0; i < L; i++) a[i] op##= b;                                   \
+        for (std::size_t i = 0; i < L; i++) a[i] op##= b;                                   \
         return a;                                                                      \
     }
 

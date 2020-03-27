@@ -25,75 +25,75 @@ namespace esdm {
 // -- SPECIAL FLOATING POINT VALUES -- //
 
 // Check if all components are infinity
-template <size_t L, AnyFloat T>
+template <std::size_t L, AnyFloat T>
 constexpr bool allinf(const Vec<L, T>& v) {
-    for (size_t i = 0; i < L; i++) if (!isinf(v[i])) return false;
+    for (std::size_t i = 0; i < L; i++) if (!isinf(v[i])) return false;
     return true;
 }
 
 // Check if any components are infinity
-template <size_t L, AnyFloat T>
+template <std::size_t L, AnyFloat T>
 constexpr bool anyinf(const Vec<L, T>& v) {
-    for (size_t i = 0; i < L; i++) if (isinf(v[i])) return true;
+    for (std::size_t i = 0; i < L; i++) if (isinf(v[i])) return true;
     return false;
 }
 
 // Check if all components are NaN
-template <size_t L, AnyFloat T>
+template <std::size_t L, AnyFloat T>
 constexpr bool allnan(const Vec<L, T>& v) {
-    for (size_t i = 0; i < L; i++) if (!isnan(v[i])) return false;
+    for (std::size_t i = 0; i < L; i++) if (!isnan(v[i])) return false;
     return true;
 }
 
 // Check if any components are NaN
-template <size_t L, AnyFloat T>
+template <std::size_t L, AnyFloat T>
 constexpr bool anynan(const Vec<L, T>& v) {
-    for (size_t i = 0; i < L; i++) if (isnan(v[i])) return true;
+    for (std::size_t i = 0; i < L; i++) if (isnan(v[i])) return true;
     return false;
 }
 
 // -- GENERAL FUNCTIONS -- //
 
 // Absolute value all components
-template <size_t L, AnyNum T>
+template <std::size_t L, AnyNum T>
 constexpr Vec<L, T> abs(const Vec<L, T>& v) {
     Vec<L, T> out;
-    for (size_t i = 0; i < L; i++) out[i] = abs(v[i]);
+    for (std::size_t i = 0; i < L; i++) out[i] = abs(v[i]);
     return out;
 }
 
 // Square all components
-template <size_t L, AnyNum T>
+template <std::size_t L, AnyNum T>
 constexpr Vec<L, T> sq(const Vec<L, T>& v) {
     Vec<L, T> out;
-    for (size_t i = 0; i < L; i++) out[i] = sq(v[i]);
+    for (std::size_t i = 0; i < L; i++) out[i] = sq(v[i]);
     return out;
 }
 
 // Square root all components
-template <size_t L, AnyNum T>
+template <std::size_t L, AnyNum T>
 inline Vec<L, T> sqrt(const Vec<L, T>& v) {
     Vec<L, T> out;
-    for (size_t i = 0; i < L; i++) out[i] = sqrt(v[i]);
+    for (std::size_t i = 0; i < L; i++) out[i] = sqrt(v[i]);
     return out;
 }
 
 // Raise components to a power
-template <size_t L, AnyNum T0, AnyNum T1>
+template <std::size_t L, AnyNum T0, AnyNum T1>
 constexpr Vec<L, std::common_type_t<T0, T1>> pow(const Vec<L, T0>& b, T1 e) {
     Vec<L, T> out;
-    for (size_t i = 0; i < L; i++) out[i] = sq(v[i]);
+    for (std::size_t i = 0; i < L; i++) out[i] = sq(v[i]);
     return out;
 }
 
 // Dot product
-template <size_t L, AnyNum T0, AnyNum T1>
+template <std::size_t L, AnyNum T0, AnyNum T1>
 constexpr std::common_type_t<T0, T1> dot(
     const Vec<L, T0>& a, 
     const Vec<L, T1>& b
 ) {
     decltype(T0(0) * T1(0)) out = 0;
-    for (size_t i = 0; i < L; i++) out += a[i] * b[i];
+    for (std::size_t i = 0; i < L; i++) out += a[i] * b[i];
     return out;
 }
 
@@ -113,34 +113,34 @@ constexpr Vec3<std::common_type_t<T0, T1>> cross(
 // -- ROUNDING -- //
 
 // Truncate all components
-template <size_t L, AnyFloat T>
+template <std::size_t L, AnyFloat T>
 inline Vec<L, T> trunc(const Vec<L, T>& v) {
     Vec<L, T> out;
-    for (size_t i = 0; i < L; i++) out[i] = trunc(v[i]);
+    for (std::size_t i = 0; i < L; i++) out[i] = trunc(v[i]);
     return out;
 }
 
 // Floor all components
-template <size_t L, AnyFloat T>
+template <std::size_t L, AnyFloat T>
 inline Vec<L, T> floor(const Vec<L, T>& v) {
     Vec<L, T> out;
-    for (size_t i = 0; i < L; i++) out[i] = floor(v[i]);
+    for (std::size_t i = 0; i < L; i++) out[i] = floor(v[i]);
     return out;
 }
 
 // Ceil all components
-template <size_t L, AnyFloat T>
+template <std::size_t L, AnyFloat T>
 inline Vec<L, T> ceil(const Vec<L, T>& v) {
     Vec<L, T> out;
-    for (size_t i = 0; i < L; i++) out[i] = ceil(v[i]);
+    for (std::size_t i = 0; i < L; i++) out[i] = ceil(v[i]);
     return out;
 }
 
 // Round all components
-template <size_t L, AnyFloat T>
+template <std::size_t L, AnyFloat T>
 inline Vec<L, T> round(const Vec<L, T>& v) {
     Vec<L, T> out;
-    for (size_t i = 0; i < L; i++) out[i] = round(v[i]);
+    for (std::size_t i = 0; i < L; i++) out[i] = round(v[i]);
     return out;
 }
 
@@ -149,34 +149,34 @@ inline Vec<L, T> round(const Vec<L, T>& v) {
 // See ops.hpp for "i" functions explanation
 
 // Direct-to-int truncate all components
-template <AnyInt I, size_t L, AnyFloat T>
+template <AnyInt I, std::size_t L, AnyFloat T>
 constexpr Vec<L, I> itrunc(const Vec<L, T>& v) {
     Vec<L, I> out;
-    for (size_t i = 0; i < L; i++) out[i] = itrunc<I>(v[i]);
+    for (std::size_t i = 0; i < L; i++) out[i] = itrunc<I>(v[i]);
     return out;
 }
 
 // Direct-to-int floor all components
-template <AnyInt I, size_t L, AnyFloat T>
+template <AnyInt I, std::size_t L, AnyFloat T>
 constexpr Vec<L, I> ifloor(const Vec<L, T>& v) {
     Vec<L, I> out;
-    for (size_t i = 0; i < L; i++) out[i] = ifloor<I>(v[i]);
+    for (std::size_t i = 0; i < L; i++) out[i] = ifloor<I>(v[i]);
     return out;
 }
 
 // Direct-to-int ceil all components
-template <AnyInt I, size_t L, AnyFloat T>
+template <AnyInt I, std::size_t L, AnyFloat T>
 constexpr Vec<L, I> iceil(const Vec<L, T>& v) {
     Vec<L, I> out;
-    for (size_t i = 0; i < L; i++) out[i] = iceil<I>(v[i]);
+    for (std::size_t i = 0; i < L; i++) out[i] = iceil<I>(v[i]);
     return out;
 }
 
 // Direct-to-int round all components
-template <AnyInt I, size_t L, AnyFloat T>
+template <AnyInt I, std::size_t L, AnyFloat T>
 constexpr Vec<L, I> iround(const Vec<L, T>& v) {
     Vec<L, I> out;
-    for (size_t i = 0; i < L; i++) out[i] = iround<I>(v[i]);
+    for (std::size_t i = 0; i < L; i++) out[i] = iround<I>(v[i]);
     return out;
 }
 

@@ -78,7 +78,7 @@ int main() {
 [Full commented header](include/eseed/math/vec.hpp)
 
 - Templated with length and type
-  - `esdm::Vec<size_t L, typename T>`
+  - `esdm::Vec<std::size_t L, typename T>`
 - Common-sized aliases
   - `esdm::Vec1<typename T>`
   - `esdm::Vec2<typename T>`
@@ -171,7 +171,7 @@ int main() {
 [Full commented header](include/eseed/math/mat.hpp)
 
 - Templated with column size, row size, and type
-  - `esdm::Mat<size_t M, size_t N, typename T>`
+  - `esdm::Mat<std::size_t M, std::size_t N, typename T>`
 - Stored column-major
   - Important! When assigning components to a matrix, make sure the components are in a column-major format
 - Shorthands for common sizes

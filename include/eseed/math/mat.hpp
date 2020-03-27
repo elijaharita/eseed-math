@@ -29,7 +29,7 @@
 
 namespace esdm {
 
-template <size_t M, size_t N, typename T>
+template <std::size_t M, std::size_t N, typename T>
 class MatData
 {
 public:
@@ -37,7 +37,7 @@ public:
 };
 
 // Forward declaration for shorthand aliases
-template <size_t M, size_t N, typename T>
+template <std::size_t M, std::size_t N, typename T>
 class Mat;
 
 // Shorthand aliases
@@ -103,7 +103,7 @@ template <typename T>
 using Mat4 = Mat4x4<T>;
 
 // Matrices are stored COLUMN-MAJOR
-template <size_t M, size_t N, typename T>
+template <std::size_t M, std::size_t N, typename T>
 class Mat : public MatData<M, N, T> {
 public:
     using Col = Vec<M, T>;
@@ -119,7 +119,7 @@ public:
     // | v, 0 |
     // | 0, v |
     constexpr explicit Mat(T component) {
-        for (size_t i = 0; i < (M > N ? M : N); i++)
+        for (std::size_t i = 0; i < (M > N ? M : N); i++)
             data[i][i] = component;
     }
 
@@ -130,52 +130,52 @@ public:
     template <ConvertibleTo<T>... Ts> requires (sizeof...(Ts) == M * N)
     constexpr Mat(const Ts &... components) {
         T expanded[M * N] = {(T)components...};
-        for (size_t i = 0; i < M; i++)
-            for (size_t j = 0; j < N; j++) 
+        for (std::size_t i = 0; i < M; i++)
+            for (std::size_t j = 0; j < N; j++) 
                 data[i][j] = expanded[i * M + j];
     }
 
     // Type / size conversion (explicit)
     // If length is smaller, trailing elements are cut
     // If length is larger, additional elements are default initialized
-    template <ConvertibleTo<T> T1, size_t M1, size_t N1>
+    template <ConvertibleTo<T> T1, std::size_t M1, std::size_t N1>
     constexpr explicit Mat(const Mat<M1, N1, T1>& other) {
-        for (size_t i = 0; i < std::min(M, M1); i++) 
+        for (std::size_t i = 0; i < std::min(M, M1); i++) 
             data[i] = Col(other[i]);
     }
 
     // Type conversion only (implicit)
     template <ConvertibleTo<T> T1>
     constexpr explicit Mat(const Mat<M, N, T1>& other) {
-        for (size_t i = 0; i < M; i++)
+        for (std::size_t i = 0; i < M; i++)
             data[i] = Col(other[i]);
     }
 
-    constexpr Col getCol(size_t j) const {
+    constexpr Col getCol(std::size_t j) const {
         Col col;
-        for (size_t i = 0; i < M; i++)
+        for (std::size_t i = 0; i < M; i++)
             col[i] = data[i][j];
         return col;
     }
 
-    constexpr Row getRow(size_t i) const {
+    constexpr Row getRow(std::size_t i) const {
         Row row;
-        for (size_t j = 0; j < N; j++)
+        for (std::size_t j = 0; j < N; j++)
             row[j] = data[i][j];
         return row;
     }
 
-    constexpr const Col &operator[](size_t i) const {
+    constexpr const Col &operator[](std::size_t i) const {
         return data[i];
     }
 
-    constexpr Col &operator[](size_t i) {
+    constexpr Col &operator[](std::size_t i) {
         return data[i];
     }
 
     constexpr std::string toString() const {
         std::string out = "[";
-        for (size_t i = 0; i < M; i++) {
+        for (std::size_t i = 0; i < M; i++) {
             out += data[i].toString();
             if (i < M - 1) out += ", ";
         }
@@ -191,70 +191,70 @@ public:
 
 // Operators
 
-template <size_t M, size_t N, typename T0, typename T1> 
+template <std::size_t M, std::size_t N, typename T0, typename T1> 
 constexpr bool operator==(const Mat<M, N, T0>& a, const Mat<M, N, T1>& b) { 
-    for (size_t i = 0; i < M; i++) if (a[i] != b[i]) return false; 
+    for (std::size_t i = 0; i < M; i++) if (a[i] != b[i]) return false; 
     return true; 
 }
 
 #define ESEED_MAT_PRE(op)                        \
-    template <size_t M, size_t N, typename T>    \
+    template <std::size_t M, std::size_t N, typename T>    \
     constexpr Mat<M, N, T> &operator op(Mat<M, N, T> &m) { \
-        for (size_t i = 0; i < M; i++) op m[i];                             \
+        for (std::size_t i = 0; i < M; i++) op m[i];                             \
         return m;                                \
     }
 
 #define ESEED_MAT_POST(op)                           \
-    template <size_t M, size_t N, typename T>        \
+    template <std::size_t M, std::size_t N, typename T>        \
     constexpr Mat<M, N, T> operator op(Mat<M, N, T> &m, int) { \
         Mat<M, N, T> out = m;                        \
-        for (size_t i = 0; i < M; i++) m[i] op;                                 \
+        for (std::size_t i = 0; i < M; i++) m[i] op;                                 \
         return out;                                  \
     }
 
 #define ESEED_MAT_UN(op)                              \
-    template <size_t M, size_t N, typename T>         \
+    template <std::size_t M, std::size_t N, typename T>         \
     constexpr Mat<M, N, T> operator op(const Mat<M, N, T> &m) { \
         Mat<M, N, T> out;                             \
-        for (size_t i = 0; i < M; i++) out[i] = op m[i];                                  \
+        for (std::size_t i = 0; i < M; i++) out[i] = op m[i];                                  \
         return out;                                   \
     }
 
 #define ESEED_MAT_BIN_MM(op)                                                                          \
-    template <size_t M, size_t N, typename T0, typename T1>                                           \
+    template <std::size_t M, std::size_t N, typename T0, typename T1>                                           \
     constexpr Mat<M, N, decltype(T0(0) op T1(0))> operator op(const Mat<M, N, T0> &a, const Mat<M, N, T1> &b) { \
         Mat<M, N, decltype(T0(0) op T1(0))> out;                                                      \
-        for (size_t i = 0; i < M; i++) out[i] = a[i] op b[i];                                                                    \
+        for (std::size_t i = 0; i < M; i++) out[i] = a[i] op b[i];                                                                    \
         return out;                                                                                   \
     }
 
 #define ESEED_MAT_BIN_MS(op)                                                        \
-    template <size_t M, size_t N, typename T0, typename T1>                         \
+    template <std::size_t M, std::size_t N, typename T0, typename T1>                         \
     constexpr Mat<M, N, decltype(T0(0) op T1(0))> operator op(const Mat<M, N, T0> &a, T1 b) { \
         Mat<M, N, decltype(T0(0) op T1(0))> out;                                    \
-        for (size_t i = 0; i < M; i++) out[i] = a[i] op b;                                                     \
+        for (std::size_t i = 0; i < M; i++) out[i] = a[i] op b;                                                     \
         return out;                                                                 \
     }
 
 #define ESEED_MAT_BIN_SM(op)                                                               \
-    template <size_t M, size_t N, typename T0, typename T1>                                \
+    template <std::size_t M, std::size_t N, typename T0, typename T1>                                \
     constexpr Mat<M, N, decltype(T0(0) op T1(0))> operator op(const T0 &a, const Mat<M, N, T1> &b) { \
         Mat<M, N, decltype(T0(0) op T1(0))> out;                                           \
-        for (size_t i = 0; i < M; i++) out[i] = a op b[i];                                                            \
+        for (std::size_t i = 0; i < M; i++) out[i] = a op b[i];                                                            \
         return out;                                                                        \
     }
 
 #define ESEED_MAT_ASSN_MM(op)                                                                    \
-    template <size_t M, size_t N, typename T0, typename T1, typename = decltype(T0(0) op T1(0))> \
+    template <std::size_t M, std::size_t N, typename T0, typename T1, typename = decltype(T0(0) op T1(0))> \
     Mat<M, N, T0>& operator op##=(Mat<M, N, T0>& a, const Mat<M, N, T1>& b) {                    \
-        for (size_t i = 0; i < M; i++) a[i] op##= b[i];                                                                        \
+        for (std::size_t i = 0; i < M; i++) a[i] op##= b[i];                                                                        \
         return a;                                                                                \
     }
 
 #define ESEED_MAT_ASSN_MS(op)                                                                    \
-    template <size_t M, size_t N, typename T0, typename T1, typename = decltype(T0(0) op T1(0))> \
+    template <std::size_t M, std::size_t N, typename T0, typename T1, typename = decltype(T0(0) op T1(0))> \
     Mat<M, N, T0>& operator op##=(Mat<M, N, T0>& a, T1 b) {                                      \
-        for (size_t i = 0; i < M; i++) a[i] op##= b;                                             \
+        for (std::size_t i = 0; i < M; i++) a[i] op##= b;                                             \
         return a;                                                                                \
     }
 
