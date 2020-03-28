@@ -145,10 +145,10 @@ public:
     // Create identity matrix, e.g.:
     // | v, 0 |
     // | 0, v |
-    constexpr Mat ident(T component = 1) {
+    constexpr static Mat ident(T component = 1) {
         Mat out;
         for (std::size_t i = 0; i < (M > N ? M : N); i++)
-            data[i][i] = component;
+            out[i][i] = component;
         return out;
     }
 
@@ -192,10 +192,76 @@ public:
 
 // -- OPERATORS -- //
 
+// Comparison
 template <std::size_t M, std::size_t N, typename T0, typename T1> 
 constexpr bool operator==(const Mat<M, N, T0>& a, const Mat<M, N, T1>& b) { 
     for (std::size_t i = 0; i < M; i++) if (a[i] != b[i]) return false; 
     return true; 
+}
+
+// Matrix-matrix multiplication
+template <std::size_t M, std::size_t N, std::size_t MN, typename T0, typename T1>
+constexpr Mat<M, N, decltype(T0(0) * T1(0))> operator*(
+    const Mat<M, MN, T0>& a, 
+    const Mat<MN, N, T1>& b
+) {
+    Mat<M, N, decltype(T0(0) * T1(0))> out;
+    for (std::size_t i = 0; i < N; i++)
+        for (std::size_t j = 0; j < M; j++)
+            out[i][j] = dot(a.getRow(i), b.getCol(j));
+    return out;
+}
+
+// Matrix-column vector multiplication
+template <std::size_t M, std::size_t N, typename T0, typename T1>
+constexpr Vec<N, decltype(T0(0) * T1(0))> operator*(
+    const Mat<M, N, T0> &a, 
+    const Vec<M, T1> &b
+) {
+    Vec<M, decltype(T0(0) * T1(0))> out;
+    for (std::size_t i = 0; i < M; i++) out[i] = dot(a.getRow(i), b);
+    return out;
+}
+
+// Row vector-matrix multiplication
+template <std::size_t M, std::size_t N, typename T0, typename T1>
+constexpr Vec<M, decltype(T0(0) * T1(0))> operator*(
+    const Vec<N, T0> &a, 
+    const Mat<M, N, T1> &b
+) {
+    Vec<N, decltype(T0(0) * T1(0))> out;
+    for (std::size_t j = 0; j < N; j++) out[j] = dot(a, b.getCol(j));
+    return out;
+}
+
+// Matrix-matrix multiplication assignment
+template <std::size_t M, std::size_t N, std::size_t MN, typename T0, typename T1>
+constexpr Mat<M, N, decltype(T0(0) * T1(0))> operator*=(
+    Mat<M, MN, T0>& a, 
+    const Mat<MN, N, T1>& b
+) {
+    a = a * b;
+    return a;
+}
+
+// Matrix-column vector multiplication assignment
+template <std::size_t M, std::size_t N, typename T0, typename T1>
+constexpr Vec<N, decltype(T0(0) * T1(0))> operator*=(
+    Mat<M, N, T0> &a, 
+    const Vec<M, T1> &b
+) {
+    a = a * b;
+    return a;
+}
+
+// Row vector-matrix multiplication assignment
+template <std::size_t M, std::size_t N, typename T0, typename T1>
+constexpr Vec<M, decltype(T0(0) * T1(0))> operator*=(
+    Vec<N, T0> &a, 
+    const Mat<M, N, T1> &b
+) {
+    a = a * b;
+    return a;
 }
 
 // Pre-increment and decrement
@@ -245,16 +311,6 @@ ESEED_MAT_UN(+)
     }
 ESEED_MAT_BIN_MM(+)
 ESEED_MAT_BIN_MM(-)
-ESEED_MAT_BIN_MM(*)
-ESEED_MAT_BIN_MM(/)
-ESEED_MAT_BIN_MM(%)
-ESEED_MAT_BIN_MM(&)
-ESEED_MAT_BIN_MM(|)
-ESEED_MAT_BIN_MM(^)
-ESEED_MAT_BIN_MM(<<)
-ESEED_MAT_BIN_MM(>>)
-ESEED_MAT_BIN_MM(&&)
-ESEED_MAT_BIN_MM(||)
 #undef ESEED_MAT_BIN_MM
 
 // Binary matrix-scalar
@@ -302,41 +358,25 @@ ESEED_MAT_BIN_SM(||)
 #undef ESEED_MAT_BIN_SM
 
 // Assignment matrix-matrix
-#define ESEED_MAT_ASSN_MM(op)                                                                    \
+#define ESEED_MAT_ASSN_MM(op)                                                                              \
     template <std::size_t M, std::size_t N, typename T0, typename T1, typename = decltype(T0(0) op T1(0))> \
-    Mat<M, N, T0>& operator op##=(Mat<M, N, T0>& a, const Mat<M, N, T1>& b) {                    \
-        for (std::size_t i = 0; i < M; i++) a[i] op##= b[i];                                                                        \
-        return a;                                                                                \
+    Mat<M, N, T0>& operator op##=(Mat<M, N, T0>& a, const Mat<M, N, T1>& b) {                              \
+        a = a op b;                                                                                        \
+        return a;                                                                                          \
     }
 ESEED_MAT_ASSN_MM(+)
 ESEED_MAT_ASSN_MM(-)
-ESEED_MAT_ASSN_MM(*)
-ESEED_MAT_ASSN_MM(/)
-ESEED_MAT_ASSN_MM(%)
-ESEED_MAT_ASSN_MM(&)
-ESEED_MAT_ASSN_MM(|)
-ESEED_MAT_ASSN_MM(^)
-ESEED_MAT_ASSN_MM(<<)
-ESEED_MAT_ASSN_MM(>>)
 #undef ESEED_MAT_ASSN_MM
 
 // Assignment matrix-scalar
-#define ESEED_MAT_ASSN_MS(op)                                                                    \
+#define ESEED_MAT_ASSN_MS(op)                                                                              \
     template <std::size_t M, std::size_t N, typename T0, typename T1, typename = decltype(T0(0) op T1(0))> \
-    Mat<M, N, T0>& operator op##=(Mat<M, N, T0>& a, T1 b) {                                      \
-        for (std::size_t i = 0; i < M; i++) a[i] op##= b;                                             \
-        return a;                                                                                \
+    Mat<M, N, T0>& operator op##=(Mat<M, N, T0>& a, T1 b) {                                                \
+        a = a op b;                                                                                        \
+        return a;                                                                                          \
     }
 ESEED_MAT_ASSN_MS(+)
 ESEED_MAT_ASSN_MS(-)
-ESEED_MAT_ASSN_MS(*)
-ESEED_MAT_ASSN_MS(/)
-ESEED_MAT_ASSN_MS(%)
-ESEED_MAT_ASSN_MS(&)
-ESEED_MAT_ASSN_MS(|)
-ESEED_MAT_ASSN_MS(^)
-ESEED_MAT_ASSN_MS(<<)
-ESEED_MAT_ASSN_MS(>>)
 #undef ESEED_MAT_ASSN_MS
 
 }

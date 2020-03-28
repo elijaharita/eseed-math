@@ -80,14 +80,6 @@ TEST_CASE("vector constructors", "[vector]") {
         REQUIRE(v.z == 0.f);
     }
 
-    SECTION("repeated single element") {
-        constexpr esdm::Vec3<float> v(1.f);
-
-        REQUIRE(v.x == 1.f);
-        REQUIRE(v.y == 1.f);
-        REQUIRE(v.z == 1.f);
-    }
-
     SECTION("multi element") {
         constexpr esdm::Vec3<float> v(1, 2, 3);
 
@@ -354,6 +346,15 @@ TEST_CASE("matrix constructors", "[matrix]") {
         REQUIRE(b[1][0] == 3);
         REQUIRE(b[1][1] == 4);
     }
+
+    SECTION("identity") {
+        auto m = esdm::Mat2<float>::ident();
+        
+        REQUIRE(m[0][0] == 1);
+        REQUIRE(m[0][1] == 0);
+        REQUIRE(m[1][0] == 0);
+        REQUIRE(m[1][1] == 1);
+    }
 }
 
 TEST_CASE("matrix operators", "[matrix]") {
@@ -416,22 +417,22 @@ TEST_CASE("matrix accessors", "[matrix]") {
 }
 
 TEST_CASE("matrix functions", "[matrix]") {
-    SECTION("inverse") {
+    SECTION("transpose") {
         constexpr esdm::Mat2<float> a(1, 2, 3, 4);
-        constexpr esdm::Mat2<float> b = esdm::inverse(a);
+        constexpr esdm::Mat2<float> b = esdm::transpose(a);
         REQUIRE(b == esdm::Mat2<float>(1, 3, 2, 4));
     }
 
     SECTION("multiplication") {
         constexpr esdm::Mat2<float> a(1, 2, 3, 4);
         constexpr esdm::Mat2<float> b(5, 6, 7, 8);
-        constexpr esdm::Mat2<float> c(esdm::matmul(a, b));
+        constexpr esdm::Mat2<float> c = a * b;
         REQUIRE(c == esdm::Mat2<float>(19, 22, 43, 50));
 
         constexpr esdm::Vec2<float> v(1, 2);
 
-        constexpr esdm::Vec2<float> d(esdm::matmul(a, v));
-        constexpr esdm::Vec2<float> e(esdm::matmul(v, a));
+        constexpr esdm::Vec2<float> d = a * v;
+        constexpr esdm::Vec2<float> e = v * a;
 
         REQUIRE(d == esdm::Vec2<float>(5, 11));
         REQUIRE(e == esdm::Vec2<float>(7, 10));

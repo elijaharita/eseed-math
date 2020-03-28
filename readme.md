@@ -37,7 +37,7 @@ int main() {
     std::cout << "point: " << point << std::endl;
     std::cout << "rotation: " << rotation << std::endl;
     
-    point = esdm::matmul(point, rotation);
+    point *= rotation;
 
     std::cout << "rotated point: " << point << std::endl;
 }
@@ -90,8 +90,6 @@ int main() {
   - Component-wise
     - `esdm::Vec3<float>(x, y)` = `[x, y, 0]`
     - `esdm::Vec3<float>(x, y, z)` = `[x, y, z]`
-  - Single component
-    - `esdm::Vec3<float>(n)` = `[n, n, n]`
   - Copy constructor
     - `esdm::Vec3<float>(otherFloatVec3 /* [1.f, 2.f, 3.f] */)` = `[1.f, 2.f, 3.f]`
     - `esdm::Vec3<float>(otherIntVec3 /* [1, 2, 3] */)` = `[1.f, 2.f, 3.f]`
@@ -184,8 +182,6 @@ int main() {
     - `esdm::Mat2<float>()` = `[[0, 0], [0, 0]]`
   - Component-wise
     - `esdm::Mat2<float>(1, 2, 3, 4)` = `[[1, 2], [3, 4]]`
-  - Identity
-    - `esdm::Mat2<float>(1)` = `[[1, 0], [0, 1]]`
 - Column and row getters
 - Operators
   - Subscript
@@ -205,14 +201,18 @@ int main() {
       - `-mat`  
   - Component-wise binary
     - `+ - * / % & | ^ << >> && ||`
-      - `mat + mat`
+      - `mat + mat` (`+ -` only)
       - `mat + number`
       - `number + mat`
-    - Warning - `mat * mat` performs component-wise multiplication, use `esdm::matmul(matA, matB)` for matrix multiplication
   - Component-wise assignment
     - `+= -= *= /= %= &= |= ^= <<= >>=`
-      - `mat += mat`
+      - `mat += mat` (`+= -=` only)
       - `mat += number`
+  - Matrix multiplication
+    - `*`
+      - `mat * mat`
+      - `mat * vec`
+      - `vec * mat`
   - ostream
     - `<<`
       - `std::cout << aMat2 << std::endl;` prints in format "`[[0, 1], [2, 3]]`"
@@ -220,6 +220,8 @@ int main() {
 ### Matrix functions
 [Full commented header](include/eseed/math/matops.hpp)
 
+- Builders
+  - Identity
 - General functions
   - Inverse
   - Matrix multiplication

@@ -261,7 +261,7 @@ ESEED_VEC_BIN_SV(||)
 #define ESEED_VEC_ASSN_VV(op)                                                               \
     template <std::size_t L, typename T0, typename T1, typename = decltype(T0(0) op T1(0))> \
     Vec<L, T0>& operator op##=(Vec<L, T0>& a, const Vec<L, T1>& b) {                        \
-        for (std::size_t i = 0; i < L; i++) a[i] op##= b[i];                                \
+        a = a op b;                                                                         \
         return a;                                                                           \
     }
 ESEED_VEC_ASSN_VV(+)
@@ -280,7 +280,7 @@ ESEED_VEC_ASSN_VV(>>)
 #define ESEED_VEC_ASSN_VS(op)                                                               \
     template <std::size_t L, typename T0, typename T1, typename = decltype(T0(0) op T1(0))> \
     Vec<L, T0>& operator op##=(Vec<L, T0>& a, T1 b) {                                       \
-        for (std::size_t i = 0; i < L; i++) a[i] op##= b;                                   \
+        a = a op b;                                                                         \
         return a;                                                                           \
     }
 ESEED_VEC_ASSN_VS(+)
