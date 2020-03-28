@@ -114,15 +114,6 @@ public:
     // | 0, 0 |
     constexpr Mat() {}
 
-    // Repeated single element
-    // Mat<2, 2, T>(v) =>
-    // | v, 0 |
-    // | 0, v |
-    constexpr explicit Mat(T component) {
-        for (std::size_t i = 0; i < (M > N ? M : N); i++)
-            data[i][i] = component;
-    }
-
     // Multi element
     // Mat<2, 2, T>(a, b, c, d) =>
     // | a, c |
@@ -149,6 +140,16 @@ public:
     constexpr explicit Mat(const Mat<M, N, T1>& other) {
         for (std::size_t i = 0; i < M; i++)
             data[i] = Col(other[i]);
+    }
+
+    // Create identity matrix, e.g.:
+    // | v, 0 |
+    // | 0, v |
+    constexpr Mat ident(T component = 1) {
+        Mat out;
+        for (std::size_t i = 0; i < (M > N ? M : N); i++)
+            data[i][i] = component;
+        return out;
     }
 
     constexpr Col getCol(std::size_t j) const {

@@ -102,12 +102,6 @@ public:
     // Vec<3, T>(): [ 0, 0, 0 ]
     constexpr Vec() : VecData<L, T>{0} {}
 
-    // Repeated single element
-    // Vec<3, T>(n) => [ n, n, n ]
-    constexpr explicit Vec(const T& n) {
-        for (std::size_t i = 0; i < L; i++) data[i] = n;
-    }
-
     // Multi element
     // Vec<3, T>(x, y, z) => [ x, y, z ]
     // Vec<3, T>(x, y) => [ x, y, 0 ]
