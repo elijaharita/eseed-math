@@ -75,34 +75,34 @@ TEST_CASE("vector constructors", "[vector]") {
     SECTION("default") {
         constexpr esdm::Vec3<float> v;
 
-        REQUIRE(v.x == 0.f);
-        REQUIRE(v.y == 0.f);
-        REQUIRE(v.z == 0.f);
+        REQUIRE(v.getX() == 0.f);
+        REQUIRE(v.getY() == 0.f);
+        REQUIRE(v.getZ() == 0.f);
     }
 
     SECTION("multi element") {
         constexpr esdm::Vec3<float> v(1, 2, 3);
 
-        REQUIRE(v.x == 1.f);
-        REQUIRE(v.y == 2.f);
-        REQUIRE(v.z == 3.f);
+        REQUIRE(v.getX() == 1.f);
+        REQUIRE(v.getY() == 2.f);
+        REQUIRE(v.getZ() == 3.f);
     }
 
     SECTION("multi element incomplete") {
         constexpr esdm::Vec3<float> v(1, 2);
 
-        REQUIRE(v.x == 1.f);
-        REQUIRE(v.y == 2.f);
-        REQUIRE(v.z == 0.f);
+        REQUIRE(v.getX() == 1.f);
+        REQUIRE(v.getY() == 2.f);
+        REQUIRE(v.getZ() == 0.f);
     }
 
     SECTION("type / length conversion") {
         constexpr esdm::Vec2<float> a(1, 2);
         constexpr esdm::Vec3<int> b(a);
 
-        REQUIRE(b.x == 1);
-        REQUIRE(b.y == 2);
-        REQUIRE(b.z == 0);
+        REQUIRE(b.getX() == 1);
+        REQUIRE(b.getY() == 2);
+        REQUIRE(b.getZ() == 0);
     }
 }
 
@@ -150,60 +150,31 @@ TEST_CASE("vector operators", "[vector]") {
 }
 
 TEST_CASE("special vector accessors", "[vector]") {
-    SECTION("vec1") {
-        constexpr esdm::Vec1<float> v(1);
+    SECTION("accessors") {
+        esdm::Vec4<float> v(1, 2, 3, 4);
 
-        // 0
-        REQUIRE(v.x == 1);
-        REQUIRE(v.r == 1);
+        REQUIRE(v.x() == 1);
+        REQUIRE(v.y() == 2);
+        REQUIRE(v.z() == 3);
+        REQUIRE(v.w() == 4);
     }
 
-    SECTION("vec2") {
-        constexpr esdm::Vec2<float> v(1, 2);
-
-        // 0
-        REQUIRE(v.x == 1);
-        REQUIRE(v.r == 1);
-
-        // 1
-        REQUIRE(v.y == 2);
-        REQUIRE(v.g == 2);
-    }
-
-    SECTION("vec3") {
-        constexpr esdm::Vec3<float> v(1, 2, 3);
-
-        // 0
-        REQUIRE(v.x == 1);
-        REQUIRE(v.r == 1);
-
-        // 1
-        REQUIRE(v.y == 2);
-        REQUIRE(v.g == 2);
-
-        // 2
-        REQUIRE(v.z == 3);
-        REQUIRE(v.b == 3);
-    }
-
-    SECTION("vec4") {
+    SECTION("getters") {
         constexpr esdm::Vec4<float> v(1, 2, 3, 4);
 
-        // 0
-        REQUIRE(v.x == 1);
-        REQUIRE(v.r == 1);
+        REQUIRE(v.getX() == 1);
+        REQUIRE(v.getY() == 2);
+        REQUIRE(v.getZ() == 3);
+        REQUIRE(v.getW() == 4);
+    }
 
-        // 1
-        REQUIRE(v.y == 2);
-        REQUIRE(v.g == 2);
-
-        // 2
-        REQUIRE(v.z == 3);
-        REQUIRE(v.b == 3);
-
-        // 3
-        REQUIRE(v.w == 4);
-        REQUIRE(v.a == 4);
+    SECTION("getters") {
+        esdm::Vec4<float> v;
+        
+        v.setX(1);
+        v.setY(2);
+        v.setZ(3);
+        v.setW(4);
     }
 }
 

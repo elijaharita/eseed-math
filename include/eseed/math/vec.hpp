@@ -32,52 +32,6 @@
 
 namespace esdm {
 
-template <std::size_t L, typename T>
-class VecData {
-public:
-    T data[L];
-};
-
-template <typename T>
-class VecData<1, T> {
-public:
-    union {
-        T data[1];
-        T x;
-        T r;
-    };
-};
-
-template <typename T>
-class VecData<2, T> {
-public:
-    union {
-        T data[2];
-        struct { T x, y; };
-        struct { T r, g; };
-    };
-};
-
-template <typename T>
-class VecData<3, T> {
-public:
-    union {
-        T data[3];
-        struct { T x, y, z; };
-        struct { T r, g, b; };
-    };
-};
-
-template <typename T>
-class VecData<4, T> {
-public:
-    union {
-        T data[4];
-        struct { T x, y, z, w; };
-        struct { T r, g, b, a; };
-    };
-};
-
 // Forward declaration for shorthand aliases
 template <std::size_t L, typename T>
 class Vec;
@@ -97,29 +51,33 @@ template <typename T>
 using Vec4 = Vec<4, T>;
 
 template <std::size_t L, typename T>
-class Vec : public VecData<L, T> {
+class Vec {
+private:
+    T data[L];
+
 public:
+
     // Vec<3, T>(): [ 0, 0, 0 ]
-    constexpr Vec() : VecData<L, T>{0} {}
+    constexpr Vec() : data{0} {}
 
     // Multi element
     // Vec<3, T>(x, y, z) => [ x, y, z ]
     // Vec<3, T>(x, y) => [ x, y, 0 ]
     template <ConvertibleTo<T>... Ts> requires (sizeof...(Ts) <= L)
-    constexpr Vec(const Ts&... components) : VecData<L, T>{((T)components)...} {}
+    constexpr Vec(const Ts&... components) : data{((T)components)...} {}
 
     // Type / length conversion (explicit)
     // If length is smaller, trailing elements are cut
     // If length is larger, additional elements are default initialized
     template <ConvertibleTo<T> T1, std::size_t L1>
-    constexpr explicit Vec(const Vec<L1, T1>& other) {
-        for (std::size_t i = 0; i < std::min(L, L1); i++) data[i] = (T)other[i];
+    constexpr explicit Vec(const Vec<L1, T1>& other) : data{} {
+        for (std::size_t i = 0; i < std::min(L, L1); i++) (*this)[i] = (T)other[i];
     }
 
     // Type conversion only (implicit)
     template <ConvertibleTo<T> T1>
-    constexpr Vec(const Vec<L, T1>& other) {
-        for (std::size_t i = 0; i < L; i++) data[i] = (T)other[i];
+    constexpr Vec(const Vec<L, T1>& other) : data{} {
+        for (std::size_t i = 0; i < L; i++) (*this)[i] = (T)other[i];
     }
 
     constexpr T operator[](std::size_t i) const {
@@ -144,6 +102,64 @@ public:
         out << v.toString();
         return out;
     }
+
+    // Named accessors
+    // vec.x() = 5; vec.x() == 5;
+#define ESEED_VEC_ACCESSOR(name, index) \
+    T& name() requires (L > index) { return (*this)[index]; }
+
+    ESEED_VEC_ACCESSOR(x, 0);
+    ESEED_VEC_ACCESSOR(y, 1);
+    ESEED_VEC_ACCESSOR(z, 2);
+    ESEED_VEC_ACCESSOR(w, 3);
+
+    ESEED_VEC_ACCESSOR(r, 0);
+    ESEED_VEC_ACCESSOR(g, 1);
+    ESEED_VEC_ACCESSOR(b, 2);
+    ESEED_VEC_ACCESSOR(a, 3);
+
+    ESEED_VEC_ACCESSOR(u, 0);
+    ESEED_VEC_ACCESSOR(v, 1); 
+#undef ESEED_VEC_ACCESSOR
+
+    // Named getters
+    // vec.getX() == 5;
+    // const compatible
+#define ESEED_VEC_GETTER(name, index) \
+    constexpr T name() const requires (L > index) { return (*this)[index]; }
+
+    ESEED_VEC_GETTER(getX, 0);
+    ESEED_VEC_GETTER(getY, 1);
+    ESEED_VEC_GETTER(getZ, 2);
+    ESEED_VEC_GETTER(getW, 3);
+
+    ESEED_VEC_GETTER(getR, 0);
+    ESEED_VEC_GETTER(getG, 1);
+    ESEED_VEC_GETTER(getB, 2);
+    ESEED_VEC_GETTER(getA, 3);
+
+    ESEED_VEC_GETTER(getU, 0);
+    ESEED_VEC_GETTER(getV, 1); 
+#undef ESEED_VEC_GETTER
+
+    // Named setters
+    // vec.setX(5);
+#define ESEED_VEC_SETTER(name, index) \
+    constexpr void name(T n) requires (L > index) { (*this)[index] = n; }
+
+    ESEED_VEC_SETTER(setX, 0);
+    ESEED_VEC_SETTER(setY, 1);
+    ESEED_VEC_SETTER(setZ, 2);
+    ESEED_VEC_SETTER(setW, 3);
+
+    ESEED_VEC_SETTER(setR, 0);
+    ESEED_VEC_SETTER(setG, 1);
+    ESEED_VEC_SETTER(setB, 2);
+    ESEED_VEC_SETTER(setA, 3);
+
+    ESEED_VEC_SETTER(setU, 0);
+    ESEED_VEC_SETTER(setV, 1); 
+#undef ESEED_VEC_SETTER
 };
 
 // -- OPERATORS -- //
