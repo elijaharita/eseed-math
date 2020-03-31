@@ -121,20 +121,19 @@ int main() {
   - ostream
     - `<<`
       - `std::cout << aVec3 << std::endl;` prints in format "`[x, y, z]`"
-- Shorthand component accessors for 1, 2, 3, and 4-component vectors
-  - (e.g. `vec[0]` can be replaced with `vec.x` for readability)
-  - `Vec1`
-    - `x` spatial component alias
-    - `r` color component alias
-  - `Vec2`
-    - `x` and `y` spatial component aliases
-    - `r` and `g` color component aliases
-  - `Vec3`
-    - `x`, `y` and `z` spatial component aliases
-    - `r`, `g` and `b` color component aliases
-  - `Vec4`
-    - `x`, `y`, `z` and `w` spatial component aliases
-    - `r`, `g`, `b` and `a` color component aliases
+- Named component accessors
+  - Spatial components
+    - x, y, z, w
+  - Color components
+    - r, g, b, a
+  - Texture coord components
+    - u, v
+  - `get_()` - retrieve component, constexpr compatible
+    - `vec.getX()`
+  - `set_(n)` - set a component
+    - `vec.setX(5)`
+  - `_()` - retrieve reference to component
+    - `vec.x() = 5`
 
 ### Vector Functions
 [Full commented header](include/eseed/math/vecops.hpp)
