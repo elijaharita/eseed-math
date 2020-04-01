@@ -22,7 +22,7 @@
 
 #include <type_traits>
 
-namespace esdm {
+namespace esd::math {
 
 template <typename T>
 concept AnyFloat = std::is_floating_point_v<T>;
@@ -43,3 +43,5 @@ template <typename From, typename To>
 concept ConvertibleTo = std::is_convertible_v<From, To>;
 
 }
+
+namespace esdm = esd::math;

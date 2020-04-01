@@ -30,7 +30,7 @@
 #include <algorithm>
 #include <concepts>
 
-namespace esdm {
+namespace esd::math {
 
 // Forward declaration for shorthand aliases
 template <std::size_t L, typename T>
@@ -312,3 +312,5 @@ ESEED_VEC_ASSN_VS(>>)
 #undef ESEED_VEC_ASSN_VS
 
 }
+
+namespace esdm = esd::math;

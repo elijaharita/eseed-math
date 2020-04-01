@@ -23,7 +23,7 @@
 #include "mat.hpp"
 #include "ops.hpp"
 
-namespace esdm {
+namespace esd::math {
 
 // -- GENERAL FUNCTIONS -- //
 
@@ -89,3 +89,5 @@ constexpr Mat4<T> matrot(const Vec3<T>& axis, T angle) {
 }
 
 };
+
+namespace esdm = esd::math;

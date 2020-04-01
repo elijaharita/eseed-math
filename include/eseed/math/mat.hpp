@@ -27,7 +27,7 @@
 #include <iostream>
 #include <array>
 
-namespace esdm {
+namespace esd::math {
 
 template <std::size_t M, std::size_t N, typename T>
 class MatData
@@ -380,3 +380,5 @@ ESEED_MAT_ASSN_MS(-)
 #undef ESEED_MAT_ASSN_MS
 
 }
+
+namespace esdm = esd::math;

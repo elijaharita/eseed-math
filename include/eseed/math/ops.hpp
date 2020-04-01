@@ -28,7 +28,7 @@
 #include <cmath>
 #include <concepts>
 
-namespace esdm {
+namespace esd::math {
 
 // -- SPECIAL FLOATING POINT VALUES -- //
 
@@ -245,3 +245,5 @@ constexpr T atanh(T n) {
 }
 
 }
+
+namespace esdm = esd::math;

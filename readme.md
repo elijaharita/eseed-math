@@ -1,5 +1,5 @@
 # eseed math
-`namespace esdm`
+`namespace esd::math` OR `namespace esdm`
 
 ## Goal
 This library aims to provide fast, flexible, and modern vector, matrix, and quaternion functions. `constexpr` is used everywhere possible, including constructors and operators, to maximize compile-time optimizations. As this is intended to be a modern library, and will likely be under active development for some time, C++20 has been chosen as the language standard as its *concepts* allow for much cleaner template code. There is no intention to support obscure or old compilers.

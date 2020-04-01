@@ -22,7 +22,7 @@
 
 #include "vec.hpp"
 
-namespace esdm {
+namespace esd::math {
 
 // -- SPECIAL FLOATING POINT VALUES -- //
 
@@ -183,3 +183,5 @@ constexpr Vec<L, I> iround(const Vec<L, T>& v) {
 }
 
 }
+
+namespace esdm = esd::math;
